@@ -1,0 +1,41 @@
+{
+  "data": [
+        {
+            "id": 1,
+            "username": "phucuser",
+            "email": "phucuser@gmail.com",
+            "fullname": "Trần Trọng Phúc",
+            "phonenumber": "0903535807",
+            "birthday": "2004-11-19",
+            "password": "12345678",
+            "role": 0,                     
+            "status": 1,                   
+            "login_type": "local"        
+        },
+        {
+            "id": 2,
+            "username": null,
+            "email": "googleuser@gmail.com",
+            "fullname": null,
+            "phonenumber": null,
+            "birthday": null,
+            "password": null,
+            "role": 0,
+            "status": 1,
+            "google_id": "104568112341234567890",
+            "login_type": "google"
+        },
+        {
+            "id": 3,
+            "username": "phucuser1",
+            "email": "phucuser@gmail.com",
+            "fullname": null,
+            "phonenumber": null,
+            "birthday": null,
+            "password": "12345678",
+            "role": 0,                     
+            "status": 1,                   
+            "login_type": "local"        
+        }
+    ] 
+}

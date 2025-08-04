@@ -1,0 +1,24 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "image": "slider1.webp"
+        },
+        {
+            "id": 2,
+            "image": "slider2.webp"
+        },
+        {
+            "id": 3,
+            "image": "slider3.webp"
+        },
+        {
+            "id": 4,
+            "image": "slider4.webp"
+        },
+        {
+            "id": 5,
+            "image": "slider5.webp"
+        }
+    ]
+}

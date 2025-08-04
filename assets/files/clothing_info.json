@@ -1,0 +1,274 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "product_id": 3,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form rộng thể thao",
+            "kieuloai": "Thể thao chuyên dụng",
+            "tinhnang": "Thấm hút mồ hôi"
+        },
+        {
+            "id": 2,
+            "product_id": 4,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester blend",
+            "thietke": "Form A-line",
+            "kieuloai": "Váy thể thao",
+            "tinhnang": "Chống nhăn, thoáng mát"
+        },
+        {
+            "id": 3,
+            "product_id": 5,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester cao cấp",
+            "thietke": "Form slim fit",
+            "kieuloai": "Quần thể thao",
+            "tinhnang": "Co giãn 4 chiều"
+        },
+        {
+            "id": 4,
+            "product_id": 11,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Cotton",
+            "thietke": "Form ôm body",
+            "kieuloai": "Thể thao chuyên dụng",
+            "tinhnang": "Kháng khuẩn"
+        },
+        {
+            "id": 5,
+            "product_id": 12,
+            "size": "S, M, L, XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form tennis",
+            "kieuloai": "Váy thể thao",
+            "tinhnang": "Chống tia UV"
+        },
+        {
+            "id": 6,
+            "product_id": 13,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Spandex blend",
+            "thietke": "Form skinny",
+            "kieuloai": "Quần thể thao nữ",
+            "tinhnang": "Logo nhũ vàng cao cấp"
+        },
+        {
+            "id": 7,
+            "product_id": 19,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form regular",
+            "kieuloai": "Áo thể thao nữ",
+            "tinhnang": "Thấm hút mồ hôi nhanh"
+        },
+        {
+            "id": 8,
+            "product_id": 20,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester microfiber",
+            "thietke": "Form pleated",
+            "kieuloai": "Váy thể thao",
+            "tinhnang": "Chống nhăn, dễ giặt"
+        },
+        {
+            "id": 9,
+            "product_id": 21,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester blend",
+            "thietke": "Form athletic",
+            "kieuloai": "Quần thể thao",
+            "tinhnang": "Thoáng khí, co giãn"
+        },
+        {
+            "id": 10,
+            "product_id": 27,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Cotton blend",
+            "thietke": "Form loose fit",
+            "kieuloai": "Áo thể thao nam",
+            "tinhnang": "Thoáng mát, thấm hút"
+        },
+        {
+            "id": 11,
+            "product_id": 28,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form A-line",
+            "kieuloai": "Váy thể thao",
+            "tinhnang": "Chống tĩnh điện"
+        },
+        {
+            "id": 12,
+            "product_id": 29,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form regular",
+            "kieuloai": "Quần thể thao",
+            "tinhnang": "Khô nhanh"
+        },
+        {
+            "id": 13,
+            "product_id": 35,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester cao cấp",
+            "thietke": "Form fitted",
+            "kieuloai": "Áo thể thao nam",
+            "tinhnang": "Chống vi khuẩn"
+        },
+        {
+            "id": 14,
+            "product_id": 36,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester blend",
+            "thietke": "Form tennis",
+            "kieuloai": "Váy thể thao",
+            "tinhnang": "Chống phai màu"
+        },
+        {
+            "id": 15,
+            "product_id": 37,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form straight",
+            "kieuloai": "Quần thể thao",
+            "tinhnang": "Chống nhăn"
+        },
+        {
+            "id": 16,
+            "product_id": 43,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester microfiber",
+            "thietke": "Form feminine",
+            "kieuloai": "Áo thể thao nữ",
+            "tinhnang": "Thấm hút mồ hôi, thoáng mát"
+        },
+        {
+            "id": 17,
+            "product_id": 44,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester premium",
+            "thietke": "Form Galaxy",
+            "kieuloai": "Váy thể thao",
+            "tinhnang": "Chống tia UV, co giãn"
+        },
+        {
+            "id": 18,
+            "product_id": 45,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester blend",
+            "thietke": "Form tapered",
+            "kieuloai": "Quần dài thể thao",
+            "tinhnang": "Co giãn 4 chiều, thoáng khí"
+        },
+        {
+            "id": 19,
+            "product_id": 51,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form regular",
+            "kieuloai": "Áo thể thao nữ",
+            "tinhnang": "Màu sắc tươi sáng"
+        },
+        {
+            "id": 20,
+            "product_id": 52,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester blend",
+            "thietke": "Form cute",
+            "kieuloai": "Váy thể thao nữ",
+            "tinhnang": "Màu hồng dễ thương"
+        },
+        {
+            "id": 21,
+            "product_id": 53,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester premium",
+            "thietke": "Form slim",
+            "kieuloai": "Quần dài thể thao nữ",
+            "tinhnang": "Chống co rút, bền màu"
+        },
+        {
+            "id": 22,
+            "product_id": 59,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form basic",
+            "kieuloai": "Áo thể thao nam",
+            "tinhnang": "Thiết kế đơn giản"
+        },
+        {
+            "id": 23,
+            "product_id": 60,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester blend",
+            "thietke": "Form professional",
+            "kieuloai": "Váy thể thao",
+            "tinhnang": "Phối màu chuyên nghiệp"
+        },
+        {
+            "id": 24,
+            "product_id": 61,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form basic",
+            "kieuloai": "Quần thể thao nữ",
+            "tinhnang": "Màu đen cơ bản"
+        },
+        {
+            "id": 25,
+            "product_id": 67,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form fitted",
+            "kieuloai": "Áo thể thao nữ",
+            "tinhnang": "Màu đỏ nổi bật"
+        },
+        {
+            "id": 26,
+            "product_id": 68,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester blend",
+            "thietke": "Form classic",
+            "kieuloai": "Váy thể thao",
+            "tinhnang": "Phối màu đỏ trắng"
+        },
+        {
+            "id": 27,
+            "product_id": 69,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form regular",
+            "kieuloai": "Quần thể thao nam",
+            "tinhnang": "Màu vẹc truyền thống"
+        },
+        {
+            "id": 28,
+            "product_id": 75,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester cao cấp",
+            "thietke": "Form athletic",
+            "kieuloai": "Áo thể thao",
+            "tinhnang": "Chống nhăn, khô nhanh"
+        },
+        {
+            "id": 29,
+            "product_id": 76,
+            "size": "S, M, L, XL, 2XL",
+            "chatlieu": "Polyester",
+            "thietke": "Form tennis",
+            "kieuloai": "Váy thể thao",
+            "tinhnang": "Phối màu trắng đen"
+        },
+        {
+            "id": 30,
+            "product_id": 77,
+            "size": "S, M, L, XL, 2XL, 3XL",
+            "chatlieu": "Polyester blend",
+            "thietke": "Form comfortable",
+            "kieuloai": "Quần thể thao nam",
+            "tinhnang": "Thoải mái, dễ vận động"
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "title": "Chào mừng đến với BADMINSTORE",
+            "image": "intro1.png"
+        },
+        {
+            "id": 2,
+            "title": "Mua sắm cầu lông dễ dàng, nhanh chóng",
+            "image": "intro2.png"
+        },
+        {
+            "id": 3,
+            "title": "Sản phẩm chính hãng, chất lượng hàng đầu",
+            "image": "intro3.png"
+        }
+    ]
+}

@@ -1,0 +1,184 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "order_id": 1,
+            "product_id": 11,
+            "product_name": "Áo cầu lông Victor T-40009D - Đỏ chính hãng",
+            "size": "L",
+            "quantity": 1,
+            "unit_price": 1870000,
+            "total_price": 1870000
+        },
+        {
+            "id": 2,
+            "order_id": 2,
+            "product_id": 17,
+            "product_name": "Set vợt cầu lông Lining Halbertec 9000 Limited - Olympic Paris 2024",
+            "size": "",
+            "quantity": 1,
+            "unit_price": 2138000,
+            "total_price": 2138000
+        },
+        {
+            "id": 3,
+            "order_id": 3,
+            "product_id": 59,
+            "product_name": "Áo Cầu Lông VNB Nam Đen - mã 758",
+            "size": "M",
+            "quantity": 1,
+            "unit_price": 119000,
+            "total_price": 119000
+        },
+        {
+            "id": 4,
+            "order_id": 3,
+            "product_id": 18,
+            "product_name": "Giày cầu lông Lining AYAU005-2 Olympic Paris 2024",
+            "size": "42",
+            "quantity": 1,
+            "unit_price": 1559000,
+            "total_price": 1559000
+        },
+        {
+            "id": 5,
+            "order_id": 4,
+            "product_id": 74,
+            "product_name": "Giày Cầu Lông Victor A199 - AP Trắng Xanh Chính Hãng",
+            "size": "38",
+            "quantity": 1,
+            "unit_price": 1580000,
+            "total_price": 1580000
+        },
+        {
+            "id": 6,
+            "order_id": 5,
+            "product_id": 41,
+            "product_name": "Vợt Cầu Lông Kamito Novablitz Pro",
+            "size": "",
+            "quantity": 1,
+            "unit_price": 1890000,
+            "total_price": 1890000
+        },
+        {
+            "id": 7,
+            "order_id": 5,
+            "product_id": 18,
+            "product_name": "Giày cầu lông Lining AYAU005-2 Olympic Paris 2024",
+            "size": "38",
+            "quantity": 1,
+            "unit_price": 1559000,
+            "total_price": 1559000
+        },
+        {
+            "id": 8,
+            "order_id": 5,
+            "product_id": 58,
+            "product_name": "Giày cầu lông VNB V001 - Cam",
+            "size": "38",
+            "quantity": 2,
+            "unit_price": 320000,
+            "total_price": 640000
+        },
+        {
+            "id": 9,
+            "order_id": 6,
+            "product_id": 59,
+            "product_name": "Áo Cầu Lông VNB Nam Đen - mã 758",
+            "size": "M",
+            "quantity": 1,
+            "unit_price": 119000,
+            "total_price": 119000
+        },
+        {
+            "id": 10,
+            "order_id": 6,
+            "product_id": 33,
+            "product_name": "Vợt cầu lông Apacs Honor Pro Chính Hãng",
+            "size": "",
+            "quantity": 1,
+            "unit_price": 1139000,
+            "total_price": 1139000
+        },
+        {
+            "id": 11,
+            "order_id": 7,
+            "product_id": 18,
+            "product_name": "Giày cầu lông Lining AYAU005-2 Olympic Paris 2024",
+            "size": "37",
+            "quantity": 1,
+            "unit_price": 1559000,
+            "total_price": 1559000
+        },
+        {
+            "id": 12,
+            "order_id": 7,
+            "product_id": 58,
+            "product_name": "Giày cầu lông VNB V001 - Cam",
+            "size": "35",
+            "quantity": 1,
+            "unit_price": 320000,
+            "total_price": 320000
+        },
+        {
+            "id": 13,
+            "order_id": 7,
+            "product_id": 66,
+            "product_name": "Giày cầu lông Yonex Mach 2 - White/green",
+            "size": "42",
+            "quantity": 1,
+            "unit_price": 694000,
+            "total_price": 694000
+        },
+        {
+            "id": 14,
+            "order_id": 8,
+            "product_id": 17,
+            "product_name": "Set vợt cầu lông Lining Halbertec 9000 Limited - Olympic Paris 2024",
+            "size": "",
+            "quantity": 1,
+            "unit_price": 1790000,
+            "total_price": 1790000
+        },
+        {
+            "id": 15,
+            "order_id": 9,
+            "product_id": 59,
+            "product_name": "Áo Cầu Lông VNB Nam Đen - mã 758",
+            "size": "XL",
+            "quantity": 1,
+            "unit_price": 119000,
+            "total_price": 119000
+        },
+        {
+            "id": 16,
+            "order_id": 9,
+            "product_id": 18,
+            "product_name": "Giày cầu lông Lining AYAU005-2 Olympic Paris 2024",
+            "size": "38",
+            "quantity": 1,
+            "unit_price": 959000,
+            "total_price": 959000
+        },
+        {
+            "id": 17,
+            "order_id": 10,
+            "product_id": 33,
+            "product_name": "Vợt cầu lông Apacs Honor Pro Chính Hãng",
+            "size": "",
+            "quantity": 1,
+            "unit_price": 1139000,
+            "total_price": 1139000
+        },
+        {
+            "id": 18,
+            "order_id": 10,
+            "product_id": 59,
+            "product_name": "Áo Cầu Lông VNB Nam Đen - mã 758",
+            "size": "2XL",
+            "quantity": 1,
+            "unit_price": 531000,
+            "total_price": 531000
+        }
+    ]
+}

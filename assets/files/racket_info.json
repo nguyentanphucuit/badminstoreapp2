@@ -1,0 +1,94 @@
+{
+  "data": [
+        {
+            "id": 1,
+            "product_id": 1,
+            "chatlieu": "Carbon Graphite",
+            "trongluong": "85-89g",
+            "chuvican": "G5",
+            "chieudaivot": "675mm",
+            "chieudaican": "200mm"
+        },
+        {
+            "id": 2,
+            "product_id": 9,
+            "chatlieu": "High Modulus Graphite",
+            "trongluong": "87g",
+            "chuvican": "G5",
+            "chieudaivot": "673mm",
+            "chieudaican": "200mm"
+        },
+        {
+            "id": 3,
+            "product_id": 17,
+            "chatlieu": "Nano Carbon",
+            "trongluong": "86g",
+            "chuvican": "G4",
+            "chieudaivot": "674mm",
+            "chieudaican": "205mm"
+        },
+        {
+            "id": 4,
+            "product_id": 25,
+            "chatlieu": "Carbon + Resin",
+            "trongluong": "88g",
+            "chuvican": "G5",
+            "chieudaivot": "676mm",
+            "chieudaican": "210mm"
+        },
+        {
+            "id": 5,
+            "product_id": 33,
+            "chatlieu": "Titanium Mesh",
+            "trongluong": "84g",
+            "chuvican": "G5",
+            "chieudaivot": "670mm",
+            "chieudaican": "200mm"
+        },
+        {
+            "id": 6,
+            "product_id": 41,
+            "chatlieu": "Carbon Fiber",
+            "trongluong": "85g",
+            "chuvican": "G4",
+            "chieudaivot": "675mm",
+            "chieudaican": "205mm"
+        },
+        {
+            "id": 7,
+            "product_id": 49,
+            "chatlieu": "Graphite + Resin",
+            "trongluong": "83g",
+            "chuvican": "G5",
+            "chieudaivot": "674mm",
+            "chieudaican": "210mm"
+        },
+        {
+            "id": 8,
+            "product_id": 57,
+            "chatlieu": "High Tension Graphite",
+            "trongluong": "82g",
+            "chuvican": "G5",
+            "chieudaivot": "675mm",
+            "chieudaican": "200mm"
+        },
+        {
+            "id": 9,
+            "product_id": 65,
+            "chatlieu": "Carbon Fiber",
+            "trongluong": "85-89g",
+            "chuvican": "G5",
+            "chieudaivot": "675mm",
+            "chieudaican": "200mm"
+        },
+        {
+            "id": 10,
+            "product_id": 73,
+            "chatlieu": "Carbon",
+            "trongluong": "85g",
+            "chuvican": "G5",
+            "chieudaivot": "675mm",
+            "chieudaican": "200mm"
+        }
+    ]
+}

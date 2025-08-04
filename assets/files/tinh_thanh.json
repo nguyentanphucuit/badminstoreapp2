@@ -1,0 +1,140 @@
+{
+  "data":[
+    {
+      "id":1,
+      "ten_tinh_thanh":"Thành phố Hà Nội"
+    },
+    {
+      "id":2,
+      "ten_tinh_thanh":"Tỉnh Bắc Ninh"
+    },
+    {
+      "id":3,
+      "ten_tinh_thanh":"Tỉnh Quảng Ninh"
+    },
+    {
+      "id":4,
+      "ten_tinh_thanh":"Tp Hải Phòng"
+    },
+    {
+      "id":5,
+      "ten_tinh_thanh":"Tỉnh Hưng Yên"
+    },
+    {
+      "id":6,
+      "ten_tinh_thanh":"Tỉnh Ninh Bình"
+    },
+    {
+      "id":7,
+      "ten_tinh_thanh":"Tỉnh Cao Bằng"
+    },
+    {
+      "id":8,
+      "ten_tinh_thanh":"Tỉnh Tuyên Quang"
+    },
+    {
+      "id":9,
+      "ten_tinh_thanh":"Tỉnh Lào Cai"
+    },
+    {
+      "id":10,
+      "ten_tinh_thanh":"Tỉnh Thái Nguyên"
+    },
+    {
+      "id":11,
+      "ten_tinh_thanh":"Tỉnh Lạng Sơn"
+    },
+    {
+      "id":12,
+      "ten_tinh_thanh":"Tỉnh Phú Thọ"
+    },
+    {
+      "id":13,
+      "ten_tinh_thanh":"Tỉnh Điện Biên"
+    },
+    {
+      "id":14,
+      "ten_tinh_thanh":"Tỉnh Lai Châu"
+    },
+    {
+      "id":15,
+      "ten_tinh_thanh":"Tỉnh Sơn La"
+    },
+    {
+      "id":16,
+      "ten_tinh_thanh":"Tỉnh Thanh Hóa"
+    },
+    {
+      "id":17,
+      "ten_tinh_thanh":"Tỉnh Nghệ An"
+    },
+    {
+      "id":18,
+      "ten_tinh_thanh":"Tỉnh Hà Tĩnh"
+    },
+    {
+      "id":19,
+      "ten_tinh_thanh":"Tỉnh Quảng Trị"
+    },
+    {
+      "id":20,
+      "ten_tinh_thanh":"Thành phố Huế"
+    },
+    {
+      "id":21,
+      "ten_tinh_thanh":"Tp Đà Nẵng"
+    },
+    {
+      "id":22,
+      "ten_tinh_thanh":"Tỉnh Quảng Ngãi"
+    },
+    {
+      "id":23,
+      "ten_tinh_thanh":"Tỉnh Khánh Hòa"
+    },
+    {
+      "id":24,
+      "ten_tinh_thanh":"Tỉnh Gia Lai"
+    },
+    {
+      "id":25,
+      "ten_tinh_thanh":"Tỉnh Đắk Lắk"
+    },
+    {
+      "id":26,
+      "ten_tinh_thanh":"Tỉnh Lâm Đồng"
+    },
+    {
+      "id":27,
+      "ten_tinh_thanh":"Tỉnh Tây Ninh"
+    },
+    {
+      "id":28,
+      "ten_tinh_thanh":"Tỉnh Đồng Nai"
+    },
+    {
+      "id":29,
+      "ten_tinh_thanh":"Tp Hồ Chí Minh"
+    },
+    {
+      "id":30,
+      "ten_tinh_thanh":"Tỉnh Vĩnh Long"
+    },
+    {
+      "id":31,
+      "ten_tinh_thanh":"Tỉnh Đồng Tháp"
+    },
+    {
+      "id":32,
+      "ten_tinh_thanh":"Tỉnh An Giang"
+    },
+    {
+      "id":33,
+      "ten_tinh_thanh":"Tp Cần Thơ"
+    },
+    {
+      "id":34,
+      "ten_tinh_thanh":"Tỉnh Cà Mau"
+    }
+  ]
+}

@@ -1,0 +1,274 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "product_id": 6,
+      "thuonghieu": "Yonex",
+      "mausac": "Vàng",
+      "kichthuoc": "70 x 30 x 25 cm",
+      "chatlieu": "Polyester cao cấp",
+      "tinhnang": "Chống nước, nhiều ngăn"
+    },
+    {
+      "id": 2,
+      "product_id": 7,
+      "thuonghieu": "Yonex",
+      "mausac": "Đen đỏ",
+      "kichthuoc": "45 x 35 x 20 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Ngăn riêng laptop, thoáng khí"
+    },
+    {
+      "id": 3,
+      "product_id": 8,
+      "thuonghieu": "Lining",
+      "mausac": "Trắng",
+      "kichthuoc": "200m x 0.7mm",
+      "chatlieu": "Nylon multifilament",
+      "tinhnang": "Độ bền cao, đàn hồi tốt"
+    },
+    {
+      "id": 4,
+      "product_id": 14,
+      "thuonghieu": "Victor",
+      "mausac": "Đa màu",
+      "kichthuoc": "75 x 32 x 28 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Chống thấm, có bánh xe"
+    },
+    {
+      "id": 5,
+      "product_id": 15,
+      "thuonghieu": "Victor",
+      "mausac": "Trắng tím",
+      "kichthuoc": "42 x 30 x 18 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Nhẹ, có quai đeo"
+    },
+    {
+      "id": 6,
+      "product_id": 16,
+      "thuonghieu": "Lining",
+      "mausac": "Đen",
+      "kichthuoc": "25 x 3 cm",
+      "chatlieu": "Polyurethane",
+      "tinhnang": "Chống trượt, độ bám tốt"
+    },
+    {
+      "id": 7,
+      "product_id": 22,
+      "thuonghieu": "Lining",
+      "mausac": "Đen xanh",
+      "kichthuoc": "68 x 28 x 22 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Nhiều ngăn, chống nước"
+    },
+    {
+      "id": 8,
+      "product_id": 23,
+      "thuonghieu": "Lining",
+      "mausac": "Xanh dương",
+      "kichthuoc": "40 x 28 x 15 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Nhẹ, thoáng khí"
+    },
+    {
+      "id": 9,
+      "product_id": 24,
+      "thuonghieu": "Lining",
+      "mausac": "Trắng xanh",
+      "kichthuoc": "Ø 6.5 x 65 cm",
+      "chatlieu": "Nylon",
+      "tinhnang": "Chứa 12 quả cầu, dễ mở"
+    },
+    {
+      "id": 10,
+      "product_id": 30,
+      "thuonghieu": "Kawasaki",
+      "mausac": "Đen",
+      "kichthuoc": "65 x 25 x 20 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Chống nước, khóa kéo bền"
+    },
+    {
+      "id": 11,
+      "product_id": 31,
+      "thuonghieu": "Kawasaki",
+      "mausac": "Xanh đen",
+      "kichthuoc": "38 x 25 x 12 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Compact, nhiều túi nhỏ"
+    },
+    {
+      "id": 12,
+      "product_id": 32,
+      "thuonghieu": "Lining",
+      "mausac": "Trắng",
+      "kichthuoc": "32 x 32 cm",
+      "chatlieu": "Cotton",
+      "tinhnang": "Thấm hút tốt, mềm mại"
+    },
+    {
+      "id": 13,
+      "product_id": 38,
+      "thuonghieu": "Apacs",
+      "mausac": "Đen xanh",
+      "kichthuoc": "70 x 30 x 25 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Chống nước, dây kéo YKK"
+    },
+    {
+      "id": 14,
+      "product_id": 39,
+      "thuonghieu": "Apacs",
+      "mausac": "Xanh",
+      "kichthuoc": "35 x 25 x 10 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Nhẹ, form thể thao"
+    },
+    {
+      "id": 15,
+      "product_id": 40,
+      "thuonghieu": "Lining",
+      "mausac": "Đen",
+      "kichthuoc": "30 x 15 cm",
+      "chatlieu": "Elastic",
+      "tinhnang": "Co giãn, hỗ trợ khớp gối"
+    },
+    {
+      "id": 16,
+      "product_id": 46,
+      "thuonghieu": "Kamito",
+      "mausac": "Đen xám",
+      "kichthuoc": "72 x 32 x 28 cm",
+      "chatlieu": "Polyester cao cấp",
+      "tinhnang": "Chống thấm, có bánh xe"
+    },
+    {
+      "id": 17,
+      "product_id": 47,
+      "thuonghieu": "Lining",
+      "mausac": "Xanh đen",
+      "kichthuoc": "45 x 32 x 18 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Ergonomic, thoáng khí"
+    },
+    {
+      "id": 18,
+      "product_id": 48,
+      "thuonghieu": "Lining",
+      "mausac": "Xanh dương",
+      "kichthuoc": "5 x 500 cm",
+      "chatlieu": "Elastic tape",
+      "tinhnang": "Hỗ trợ cơ bắp, co giãn"
+    },
+    {
+      "id": 19,
+      "product_id": 54,
+      "thuonghieu": "Taro",
+      "mausac": "Xanh",
+      "kichthuoc": "68 x 28 x 25 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Chống nước, nhiều ngăn"
+    },
+    {
+      "id": 20,
+      "product_id": 55,
+      "thuonghieu": "Taro",
+      "mausac": "Trắng đỏ",
+      "kichthuoc": "42 x 30 x 15 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Nhẹ, thiết kế thể thao"
+    },
+    {
+      "id": 21,
+      "product_id": 56,
+      "thuonghieu": "Lining",
+      "mausac": "Trắng",
+      "kichthuoc": "25-27 cm",
+      "chatlieu": "Cotton blend",
+      "tinhnang": "Thấm hút mồ hôi, thoáng khí"
+    },
+    {
+      "id": 22,
+      "product_id": 62,
+      "thuonghieu": "VNB",
+      "mausac": "Đỏ",
+      "kichthuoc": "75 x 35 x 30 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Limited edition, chống nước"
+    },
+    {
+      "id": 23,
+      "product_id": 63,
+      "thuonghieu": "VNB",
+      "mausac": "Đen xanh",
+      "kichthuoc": "40 x 28 x 12 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Compact, phong cách 2020"
+    },
+    {
+      "id": 24,
+      "product_id": 64,
+      "thuonghieu": "Lining",
+      "mausac": "Trắng xanh",
+      "kichthuoc": "18 x 6 cm",
+      "chatlieu": "Cotton terry",
+      "tinhnang": "Thấm hút mồ hôi, co giãn"
+    },
+    {
+      "id": 25,
+      "product_id": 70,
+      "thuonghieu": "Yonex",
+      "mausac": "Cam đỏ",
+      "kichthuoc": "65 x 25 x 18 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Chống nước, khóa kéo bền"
+    },
+    {
+      "id": 26,
+      "product_id": 71,
+      "thuonghieu": "Yonex",
+      "mausac": "Xanh nhạt",
+      "kichthuoc": "38 x 28 x 12 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Nhẹ, phong cách trẻ trung"
+    },
+    {
+      "id": 27,
+      "product_id": 72,
+      "thuonghieu": "Lining",
+      "mausac": "Đen",
+      "kichthuoc": "8 x 35 cm",
+      "chatlieu": "Cotton terry",
+      "tinhnang": "Chặn mồ hôi, thoáng khí"
+    },
+    {
+      "id": 28,
+      "product_id": 78,
+      "thuonghieu": "Victor",
+      "mausac": "Vàng",
+      "kichthuoc": "60 x 22 x 15 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Phiên bản Doraemon, dễ thương"
+    },
+    {
+      "id": 29,
+      "product_id": 79,
+      "thuonghieu": "Victor",
+      "mausac": "Đen đỏ",
+      "kichthuoc": "40 x 25 x 10 cm",
+      "chatlieu": "Polyester",
+      "tinhnang": "Compact, phong cách thể thao"
+    },
+    {
+      "id": 30,
+      "product_id": 80,
+      "thuonghieu": "Lining",
+      "mausac": "Đen",
+      "kichthuoc": "70 x 8 cm",
+      "chatlieu": "Velvet",
+      "tinhnang": "Bảo vệ vợt, mềm mại"
+    }
+  ]
+}

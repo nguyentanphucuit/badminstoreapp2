@@ -1,0 +1,44 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "categoryname": "Vợt cầu lông",
+            "image": "vot.png"
+        },
+        {
+            "id": 2,
+            "categoryname": "Giày cầu lông",
+            "image": "giay.png"
+        },
+        {
+            "id": 3,
+            "categoryname": "Áo cầu lông",
+            "image": "ao.png"
+        },
+        {
+            "id": 4,
+            "categoryname": "Váy cầu lông",
+            "image": "vay.png"
+        },
+        {
+            "id": 5,
+            "categoryname": "Quần cầu lông",
+            "image": "quan.png"
+        },
+        {
+            "id": 6,
+            "categoryname": "Túi cầu lông",
+            "image": "tui.png"
+        },
+        {
+            "id": 7,
+            "categoryname": "Balo cầu lông",
+            "image": "balo.png"
+        },
+        {
+            "id": 8,
+            "categoryname": "Phụ kiện cầu lông",
+            "image": "phukien.png"
+        }
+    ]
+}
