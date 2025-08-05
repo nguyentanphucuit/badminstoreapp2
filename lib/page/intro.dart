@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../page/login_register_forget/login.dart';
+import '../page/auth_wrapper.dart';
 
 class IntroScreen extends StatefulWidget {
   @override
@@ -14,17 +14,18 @@ class _IntroScreenState extends State<IntroScreen> {
     {
       "image": "assets/images/intro/intro1.jpg",
       "title": "Đặt hàng Online",
-      "desc": "Bạn đặt hàng trên ứng dụng mua sắm BADMINSTORE thật dễ dàng và nhanh chóng."
+      "desc":
+          "Bạn đặt hàng trên ứng dụng mua sắm BADMINSTORE thật dễ dàng và nhanh chóng.",
     },
     {
       "image": "assets/images/intro/intro2.jpg",
       "title": "Thanh toán dễ dàng",
-      "desc": "Thanh toán an toàn, tiện lợi và bảo mật."
+      "desc": "Thanh toán an toàn, tiện lợi và bảo mật.",
     },
     {
       "image": "assets/images/intro/intro3.jpg",
       "title": "Giao hàng tận nhà",
-      "desc": "Giao hàng nhanh chóng, đưa tận tay sản phẩm đến khách hàng."
+      "desc": "Giao hàng nhanh chóng, đưa tận tay sản phẩm đến khách hàng.",
     },
   ];
 
@@ -39,7 +40,7 @@ class _IntroScreenState extends State<IntroScreen> {
       // TODO: Điều hướng sang trang đăng nhập hoặc trang chính
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => const AuthWrapper()),
       );
     }
   }
@@ -48,14 +49,14 @@ class _IntroScreenState extends State<IntroScreen> {
     // TODO: Điều hướng sang trang chính nếu nhấn bỏ qua
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      MaterialPageRoute(builder: (_) => const AuthWrapper()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Stack(
           children: [
@@ -112,7 +113,8 @@ class _IntroScreenState extends State<IntroScreen> {
                     width: _currentIndex == index ? 16 : 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: _currentIndex == index ? Colors.orange : Colors.grey,
+                      color:
+                          _currentIndex == index ? Colors.orange : Colors.grey,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -128,8 +130,13 @@ class _IntroScreenState extends State<IntroScreen> {
                 onPressed: _skipIntro,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
                 child: const Text(
                   "Bỏ qua",
@@ -144,11 +151,18 @@ class _IntroScreenState extends State<IntroScreen> {
                 onPressed: _nextPage,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                 ),
                 child: Text(
-                  _currentIndex == _introData.length - 1 ? "Bắt đầu" : "Tiếp tục",
+                  _currentIndex == _introData.length - 1
+                      ? "Bắt đầu"
+                      : "Tiếp tục",
                   style: const TextStyle(color: Colors.white),
                 ),
               ),

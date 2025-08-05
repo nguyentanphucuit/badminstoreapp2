@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../page/home/homewidget.dart';
 import '../page/favorite/productfavorite.dart';
 import '../page/order/mainorder.dart';
 import '../page/personal/mainpersonal.dart';
-import '../data/model/usermodel.dart';
-import '../data/model/user_provider.dart';
+import '../providers/auth_provider.dart';
 
 class MainPage extends ConsumerStatefulWidget {
-  //final UserModel? user;
-  
   const MainPage({Key? key}) : super(key: key);
 
   @override
@@ -21,81 +17,104 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(userProvider);
-    // Danh sách các trang với user data
-    List<Widget> pages = [
-      HomeWidget(user: user), // Trang chủ
-      ProductFavorite(), // Trang yêu thích
-      MainOrder(user: user), // Trang đơn hàng
-      ProfilePage(user: user), // Trang cá nhân với user data
-    ];
-    return Scaffold(
-      body: pages[currentIndex],
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFE8D5C4), // Màu nền bottom bar giống hình
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+    final authState = ref.watch(authProvider);
+
+    return authState.when(
+      data: (user) {
+        // Danh sách các trang
+        List<Widget> pages = [
+          const HomePage(), // Trang chủ - simplified for now
+          const ProductFavorite(), // Trang yêu thích
+          const MainOrder(), // Trang đơn hàng - will be updated to use Firebase Auth
+          const ProfilePage(), // Trang cá nhân
+        ];
+
+        return Scaffold(
+          body: pages[currentIndex],
+          bottomNavigationBar: Container(
+            decoration: const BoxDecoration(
+              color: Color(0xFFE8D5C4), // Màu nền bottom bar giống hình
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: currentIndex,
+              onTap: (index) {
+                setState(() {
+                  currentIndex = index;
+                });
+              },
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              selectedItemColor: const Color(
+                0xFF8B4513,
+              ), // Màu nâu đậm khi chọn
+              unselectedItemColor: const Color(0xFF8B4513).withOpacity(0.6),
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 12,
+              ),
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Trang chủ',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.favorite),
+                  label: 'Yêu thích',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.receipt_long),
+                  label: 'Đơn hàng',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Cá nhân',
+                ),
+              ],
+            ),
           ),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: (index) {
-            setState(() {
-              currentIndex = index;
-            });
-          },
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          selectedItemColor: const Color(0xFF8B4513), // Màu nâu đậm khi chọn
-          unselectedItemColor: const Color(0xFF8B4513).withOpacity(0.6),
-          selectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
+        );
+      },
+      loading:
+          () => const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B4513)),
+              ),
+            ),
           ),
-          unselectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.normal,
-            fontSize: 12,
+      error:
+          (error, stack) => Scaffold(
+            body: Center(
+              child: Text(
+                'Lỗi: $error',
+                style: const TextStyle(color: Color(0xFF8B4513)),
+              ),
+            ),
           ),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Trang chủ',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Yêu thích',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long),
-              label: 'Đơn hàng',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Cá nhân',
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
 
 class ProfilePage extends StatelessWidget {
-  final UserModel? user;
-  
-  const ProfilePage({Key? key, this.user}) : super(key: key);
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Trực tiếp hiển thị MainPersonalPage với user data
-    return MainPersonalPage(user: user);
+    // MainPersonalPage now handles Firebase Auth internally
+    return const MainPersonalPage();
   }
 }
 
-// Các trang placeholder
+// Simple home page placeholder
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -105,38 +124,6 @@ class HomePage extends StatelessWidget {
       body: Center(
         child: Text(
           'Trang chủ',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
-
-class FavoritePage extends StatelessWidget {
-  const FavoritePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Yêu thích',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
-
-class OrderPage extends StatelessWidget {
-  const OrderPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Đơn hàng',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),

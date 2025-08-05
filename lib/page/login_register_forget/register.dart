@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login.dart';
+import 'login_with_firebase.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,13 +12,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _agreeToTruth = false;
   bool _agreeToPolicy = false;
-
 
   @override
   void dispose() {
@@ -57,7 +57,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Color(0xFF8B4513)),
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Color(0xFF8B4513),
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -178,17 +181,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
 
                 const SizedBox(height: 16), // Khoảng cách trước nút
-
                 // Nút đăng ký
                 Container(
                   width: double.infinity,
                   height: 56,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFFFF8C42),
-                        Color(0xFFFF6B1A),
-                      ],
+                      colors: [Color(0xFFFF8C42), Color(0xFFFF6B1A)],
                     ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
@@ -199,13 +198,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                   ),
-                  
+
                   child: ElevatedButton(
                     onPressed: () {
                       // Xử lý đăng ký
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const LoginWithFirebaseScreen(),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -291,28 +292,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: TextField(
         controller: controller,
         obscureText: obscureText,
-        style: const TextStyle(
-          color: Color(0xFF8B4513),
-          fontSize: 16,
-        ),
+        style: const TextStyle(color: Color(0xFF8B4513), fontSize: 16),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(
-            color: const Color(0xFF8B4513).withOpacity(0.7),
-          ),
-          prefixIcon: Icon(
-            icon,
-            color: const Color(0xFF8B4513),
-          ),
-          suffixIcon: isPassword
-              ? IconButton(
-                  icon: Icon(
-                    obscureText ? Icons.visibility : Icons.visibility_off,
-                    color: const Color(0xFF8B4513),
-                  ),
-                  onPressed: onSuffixTap,
-                )
-              : null,
+          hintStyle: TextStyle(color: const Color(0xFF8B4513).withOpacity(0.7)),
+          prefixIcon: Icon(icon, color: const Color(0xFF8B4513)),
+          suffixIcon:
+              isPassword
+                  ? IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility : Icons.visibility_off,
+                      color: const Color(0xFF8B4513),
+                    ),
+                    onPressed: onSuffixTap,
+                  )
+                  : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,

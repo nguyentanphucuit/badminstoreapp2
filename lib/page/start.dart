@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_register_forget/login.dart';
+import 'login_register_forget/login_with_firebase.dart';
 import '../page/intro.dart';
 
 class StartScreen extends StatefulWidget {
@@ -19,35 +19,27 @@ class _StartScreenState extends State<StartScreen>
   @override
   void initState() {
     super.initState();
-    
+
     // Animation cho logo (di chuyển từ giữa lên trên)
     _logoController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    
+
     // Animation cho nội dung (fade in)
     _contentController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
-    _logoAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _logoController,
-      curve: Curves.easeInOut,
-    ));
-    
-    _contentAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _contentController,
-      curve: Curves.easeInOut,
-    ));
-    
+
+    _logoAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.easeInOut),
+    );
+
+    _contentAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _contentController, curve: Curves.easeInOut),
+    );
+
     // Bắt đầu animation
     _startAnimation();
 
@@ -63,12 +55,10 @@ class _StartScreenState extends State<StartScreen>
     Future.delayed(const Duration(seconds: 4), () {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => IntroScreen(),
+          pageBuilder:
+              (context, animation, secondaryAnimation) => IntroScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: const Duration(milliseconds: 800),
         ),
@@ -80,7 +70,7 @@ class _StartScreenState extends State<StartScreen>
     // Đợi 500ms rồi bắt đầu đẩy logo lên
     await Future.delayed(const Duration(milliseconds: 1000));
     _logoController.forward();
-    
+
     // Đợi logo animation hoàn thành một phần rồi hiển thị nội dung
     await Future.delayed(const Duration(milliseconds: 600));
     _contentController.forward();
@@ -96,7 +86,7 @@ class _StartScreenState extends State<StartScreen>
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -117,18 +107,15 @@ class _StartScreenState extends State<StartScreen>
             return Column(
               children: [
                 // Spacer để đẩy content xuống giữa
-                Expanded(
-                  flex: 1,
-                  child: Container(),
-                ),
-                
+                Expanded(flex: 1, child: Container()),
+
                 // Logo và shopname group
                 AnimatedBuilder(
                   animation: _logoAnimation,
                   builder: (context, child) {
                     // Animation di chuyển toàn bộ group lên trên
                     double translateY = -(_logoAnimation.value * 50);
-                    
+
                     return Transform.translate(
                       offset: Offset(0, translateY),
                       child: Column(
@@ -141,9 +128,10 @@ class _StartScreenState extends State<StartScreen>
                             height: 120,
                             fit: BoxFit.contain,
                           ),
-                          
-                          const SizedBox(height: 20), // Khoảng cách giữa logo và shopname
-                          
+
+                          const SizedBox(
+                            height: 20,
+                          ), // Khoảng cách giữa logo và shopname
                           // Shopname với fade in animation
                           AnimatedBuilder(
                             animation: _contentAnimation,
@@ -164,7 +152,7 @@ class _StartScreenState extends State<StartScreen>
                     );
                   },
                 ),
-                
+
                 // Loading section
                 AnimatedBuilder(
                   animation: _contentAnimation,
@@ -175,15 +163,17 @@ class _StartScreenState extends State<StartScreen>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const SizedBox(height: 30),
-                          
+
                           // Loading indicator
                           const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF8B4513)),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFF8B4513),
+                            ),
                             strokeWidth: 3,
                           ),
-                          
+
                           const SizedBox(height: 20),
-                          
+
                           // Text "Đang tải..."
                           const Text(
                             'Đang tải...',
@@ -198,12 +188,9 @@ class _StartScreenState extends State<StartScreen>
                     );
                   },
                 ),
-                
+
                 // Spacer để cân bằng layout
-                Expanded(
-                  flex: 1,
-                  child: Container(),
-                ),
+                Expanded(flex: 1, child: Container()),
               ],
             );
           },

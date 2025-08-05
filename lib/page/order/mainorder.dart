@@ -381,8 +381,8 @@ import '../order/orderbody.dart';
 
 class MainOrder extends ConsumerStatefulWidget {
   final UserModel? user;
-  
-  const MainOrder({Key? key, required this.user}) : super(key: key);
+
+  const MainOrder({Key? key, this.user}) : super(key: key);
 
   @override
   ConsumerState<MainOrder> createState() => _MainOrderState();
@@ -451,7 +451,6 @@ class _MainOrderState extends ConsumerState<MainOrder>
         DateTime dateB = DateTime.parse(b.orderDate ?? '');
         return dateB.compareTo(dateA);
       });
-
     } catch (e) {
       setState(() {
         errorMessage = 'Lỗi khi tải dữ liệu: ${e.toString()}';
@@ -467,9 +466,8 @@ class _MainOrderState extends ConsumerState<MainOrder>
   // Lọc đơn hàng theo userId của user đã đăng nhập
   void _filterOrdersByUser() {
     if (widget.user?.id != null) {
-      userOrders = allOrders
-          .where((order) => order.userId == widget.user!.id)
-          .toList();
+      userOrders =
+          allOrders.where((order) => order.userId == widget.user!.id).toList();
     } else {
       // Nếu không có user (chưa đăng nhập), hiển thị danh sách trống
       userOrders = [];
@@ -479,15 +477,16 @@ class _MainOrderState extends ConsumerState<MainOrder>
   // Create product models from order details (temporary solution)
   List<ProductModel> _createProductsFromOrderDetails() {
     Map<int, ProductModel> productMap = {};
-    
+
     for (var detail in orderDetails) {
-      if (detail.productId != null && !productMap.containsKey(detail.productId)) {
+      if (detail.productId != null &&
+          !productMap.containsKey(detail.productId)) {
         // Extract product name from order detail
         String? productName;
         if (detail is OrderDetailModelWithName) {
           productName = (detail as OrderDetailModelWithName).productName;
         }
-        
+
         productMap[detail.productId!] = ProductModel(
           id: detail.productId,
           productName: productName ?? 'Sản phẩm ${detail.productId}',
@@ -496,7 +495,7 @@ class _MainOrderState extends ConsumerState<MainOrder>
         );
       }
     }
-    
+
     return productMap.values.toList();
   }
 
@@ -505,9 +504,11 @@ class _MainOrderState extends ConsumerState<MainOrder>
     if (selectedFilter == 'all') {
       return userOrders;
     }
-    
+
     int statusFilter = int.parse(selectedFilter);
-    return userOrders.where((order) => order.orderStatus == statusFilter).toList();
+    return userOrders
+        .where((order) => order.orderStatus == statusFilter)
+        .toList();
   }
 
   // Lấy chi tiết đơn hàng theo orderId (chỉ cho đơn hàng của user)
@@ -606,37 +607,36 @@ class _MainOrderState extends ConsumerState<MainOrder>
           ],
         ),
       ),
-      body: isLoading
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 20),
-                  Text(
-                    'Đang tải đơn hàng...',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
+      body:
+          isLoading
+              ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 20),
+                    Text(
+                      'Đang tải đơn hàng...',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
-                  ),
-                ],
-              ),
-            )
-          : errorMessage != null
+                  ],
+                ),
+              )
+              : errorMessage != null
               ? _buildErrorState()
               : RefreshIndicator(
-                  onRefresh: loadData,
-                  child: filteredOrders.isEmpty
-                      ? _buildEmptyState()
-                      : ListView.builder(
+                onRefresh: loadData,
+                child:
+                    filteredOrders.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
                           padding: const EdgeInsets.all(8),
                           itemCount: filteredOrders.length,
                           itemBuilder: (context, index) {
                             OrderModel order = filteredOrders[index];
-                            List<OrderDetailModel> orderDetailList = 
+                            List<OrderDetailModel> orderDetailList =
                                 getOrderDetailsByOrderId(order.id!);
-                            
+
                             return itemOrderView(
                               order,
                               orderDetailList,
@@ -645,7 +645,7 @@ class _MainOrderState extends ConsumerState<MainOrder>
                             );
                           },
                         ),
-                ),
+              ),
     );
   }
 
@@ -689,23 +689,24 @@ class _MainOrderState extends ConsumerState<MainOrder>
             Text(
               'Vui lòng đăng nhập để xem đơn hàng của bạn',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () {
                 // Navigate to login page
-                Navigator.pushNamed(context, '/login');
+                // Navigation will be handled by AuthWrapper automatically
+                // No need to navigate manually
               },
               icon: const Icon(Icons.login),
               label: const Text('Đăng nhập'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue[600],
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -722,11 +723,7 @@ class _MainOrderState extends ConsumerState<MainOrder>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 80,
-            color: Colors.red[400],
-          ),
+          Icon(Icons.error_outline, size: 80, color: Colors.red[400]),
           const SizedBox(height: 16),
           Text(
             'Có lỗi xảy ra',
@@ -742,10 +739,7 @@ class _MainOrderState extends ConsumerState<MainOrder>
             child: Text(
               errorMessage ?? '',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
             ),
           ),
           const SizedBox(height: 24),
@@ -770,7 +764,7 @@ class _MainOrderState extends ConsumerState<MainOrder>
   Widget _buildEmptyState() {
     String message = '';
     IconData icon = Icons.shopping_bag_outlined;
-    
+
     switch (selectedFilter) {
       case 'all':
         message = 'Bạn chưa có đơn hàng nào';
@@ -797,11 +791,7 @@ class _MainOrderState extends ConsumerState<MainOrder>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(icon, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             message,
@@ -814,10 +804,7 @@ class _MainOrderState extends ConsumerState<MainOrder>
           const SizedBox(height: 8),
           Text(
             'Kéo xuống để làm mới',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
           /*
           const SizedBox(height: 24),

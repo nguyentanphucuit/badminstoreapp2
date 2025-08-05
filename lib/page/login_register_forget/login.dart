@@ -819,14 +819,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
 //----------------------------------
 import 'package:flutter/material.dart';
-import 'register.dart';
+import 'register_with_firebase.dart';
 import 'forget.dart';
 import '../../page/mainpage.dart';
 import '../../data/data/userdata.dart';
 import '../../data/model/usermodel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/model/user_provider.dart';
-
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -839,7 +838,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final UserData _userData = UserData();
-  
+
   bool _isPasswordVisible = false;
   bool _isLoading = false;
   String _errorMessage = '';
@@ -881,12 +880,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       // Load dữ liệu user từ JSON
       List<UserModel> users = await _userData.loadData();
-      
+
       // Tìm user phù hợp
       UserModel? foundUser;
       for (UserModel user in users) {
         // Kiểm tra đăng nhập bằng username hoặc email
-        if ((user.username == username || user.email == username) && 
+        if ((user.username == username || user.email == username) &&
             user.password == password &&
             user.loginType == 'local') {
           foundUser = user;
@@ -913,7 +912,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         // Hiển thị thông báo thành công
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Đăng nhập thành công! Chào mừng ${foundUser.fullname ?? foundUser.username}'),
+            content: Text(
+              'Đăng nhập thành công! Chào mừng ${foundUser.fullname ?? foundUser.username}',
+            ),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -923,12 +924,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         Future.delayed(const Duration(seconds: 1), () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => MainPage(),
-            ),
+            MaterialPageRoute(builder: (context) => MainPage()),
           );
         });
-
       } else {
         // Đăng nhập thất bại
         setState(() {
@@ -936,7 +934,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           _isLoading = false;
         });
       }
-
     } catch (e) {
       setState(() {
         _errorMessage = 'Có lỗi xảy ra, vui lòng thử lại';
@@ -955,10 +952,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFFFB382),
-              Color(0xFFFF8C42),
-            ],
+            colors: [Color(0xFFFFB382), Color(0xFFFF8C42)],
           ),
         ),
         child: SafeArea(
@@ -966,9 +960,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             builder: (context, constraints) {
               return SingleChildScrollView(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: IntrinsicHeight(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -1017,7 +1009,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.red.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.red.withOpacity(0.3)),
+                                border: Border.all(
+                                  color: Colors.red.withOpacity(0.3),
+                                ),
                               ),
                               child: Row(
                                 children: [
@@ -1114,11 +1108,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         : Icons.visibility,
                                     color: Color(0xFF8B4513),
                                   ),
-                                  onPressed: _isLoading ? null : () {
-                                    setState(() {
-                                      _isPasswordVisible = !_isPasswordVisible;
-                                    });
-                                  },
+                                  onPressed:
+                                      _isLoading
+                                          ? null
+                                          : () {
+                                            setState(() {
+                                              _isPasswordVisible =
+                                                  !_isPasswordVisible;
+                                            });
+                                          },
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -1144,19 +1142,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
-                              onTap: _isLoading ? null : () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const ForgetPasswordScreen(),
-                                  ),
-                                );
-                              },
+                              onTap:
+                                  _isLoading
+                                      ? null
+                                      : () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                    const ForgetPasswordScreen(),
+                                          ),
+                                        );
+                                      },
                               child: Text(
                                 'Quên mật khẩu?',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: _isLoading ? Color(0xFF8B4513).withOpacity(0.5) : Color(0xFF8B4513),
+                                  color:
+                                      _isLoading
+                                          ? Color(0xFF8B4513).withOpacity(0.5)
+                                          : Color(0xFF8B4513),
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -1171,12 +1177,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             height: 50,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: _isLoading 
-                                  ? [Colors.grey[400]!, Colors.grey[500]!]
-                                  : [
-                                      Color(0xFFFF8C42),
-                                      Color(0xFFFF6B1A),
-                                    ],
+                                colors:
+                                    _isLoading
+                                        ? [Colors.grey[400]!, Colors.grey[500]!]
+                                        : [
+                                          Color(0xFFFF8C42),
+                                          Color(0xFFFF6B1A),
+                                        ],
                               ),
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
@@ -1196,23 +1203,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: _isLoading 
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : const Text(
-                                    'Đăng nhập',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                              child:
+                                  _isLoading
+                                      ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                        ),
+                                      )
+                                      : const Text(
+                                        'Đăng nhập',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                             ),
                           ),
 
@@ -1269,22 +1280,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                               ),
                               TextButton(
-                                onPressed: _isLoading ? null : () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                                  );
-                                },
+                                onPressed:
+                                    _isLoading
+                                        ? null
+                                        : () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) =>
+                                                      const RegisterWithFirebaseScreen(),
+                                            ),
+                                          );
+                                        },
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                   minimumSize: Size.zero,
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
                                   'Đăng kí ở đây',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: _isLoading ? Color(0xFF8B4513).withOpacity(0.5) : Color(0xFF8B4513),
+                                    color:
+                                        _isLoading
+                                            ? Color(0xFF8B4513).withOpacity(0.5)
+                                            : Color(0xFF8B4513),
                                     fontWeight: FontWeight.bold,
                                     decoration: TextDecoration.underline,
                                   ),

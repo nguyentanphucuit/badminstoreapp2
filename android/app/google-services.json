@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "927601135515",
+    "project_id": "badminstore",
+    "storage_bucket": "badminstore.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927601135515:android:1b59e033ed23c645991b3e",
+        "android_client_info": {
+          "package_name": "com.badminstoreapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCS9hvgwz2MwkJmZVPDCOPRr_iBBnLQzwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
