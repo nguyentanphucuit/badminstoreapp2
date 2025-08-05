@@ -18,6 +18,7 @@ class FirebaseConfig {
   static const String productsCollection = 'products';
   static const String ordersCollection = 'orders';
   static const String categoriesCollection = 'categories';
+  static const String favoritesCollection = 'favorites';
 
   // Storage settings
   static const String productImagesPath = 'product_images';

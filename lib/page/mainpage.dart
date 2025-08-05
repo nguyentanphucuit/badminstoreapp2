@@ -5,6 +5,7 @@ import '../page/order/mainorder.dart';
 import '../page/personal/mainpersonal.dart';
 import '../page/home/homewidget.dart';
 import '../providers/auth_provider.dart';
+import '../data/model/product_viewmodel.dart';
 
 class MainPage extends ConsumerStatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -15,6 +16,28 @@ class MainPage extends ConsumerStatefulWidget {
 
 class _MainPageState extends ConsumerState<MainPage> {
   int currentIndex = 0;
+  bool _favoritesLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Don't load favorites here, wait for auth state to be ready
+  }
+
+  /// Loads favorites from Firebase Firestore when user is authenticated
+  Future<void> _loadFavorites() async {
+    try {
+      print('Loading favorites...'); // Debug log
+      await ref.read(productsProvider.notifier).loadFavoritesFromFirestore();
+      setState(() {
+        _favoritesLoaded = true;
+      });
+      print('Favorites loaded successfully'); // Debug log
+    } catch (e) {
+      print('Failed to load favorites: $e');
+      // Don't set _favoritesLoaded to true if it failed
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +46,13 @@ class _MainPageState extends ConsumerState<MainPage> {
     return authState.when(
       data: (user) {
         print('MainPage: Building with user: ${user?.uid}'); // Debug log
+
+        // Load favorites if user is authenticated and not loaded yet
+        if (user != null && !_favoritesLoaded) {
+          print('User authenticated, loading favorites...'); // Debug log
+          // Use Future.microtask to avoid calling setState during build
+          Future.microtask(() => _loadFavorites());
+        }
 
         // Danh sách các trang
         List<Widget> pages = [
@@ -98,8 +128,8 @@ class _MainPageState extends ConsumerState<MainPage> {
           (error, stack) => Scaffold(
             body: Center(
               child: Text(
-                'Lỗi: $error',
-                style: const TextStyle(color: Color(0xFF8B4513)),
+                'Error: $error',
+                style: const TextStyle(color: Colors.red),
               ),
             ),
           ),
