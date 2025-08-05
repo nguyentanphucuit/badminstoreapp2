@@ -67,8 +67,23 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
       // Don't set error state here, let the auth state listener handle it
     } catch (e) {
       print('AuthProvider: Sign in error: $e'); // Debug log
-      // Don't set error state for login failures, just rethrow
-      // The auth state listener will handle the current user state
+
+      // Check if user was actually logged in despite the error
+      final currentUser = _authService.currentUser;
+      if (currentUser != null) {
+        // User was logged in successfully, don't rethrow
+        print(
+          'AuthProvider: User logged in successfully despite error: ${currentUser.uid}',
+        ); // Debug log
+        return;
+      }
+
+      // Reset loading state for failed login
+      state = const AsyncValue.data(null);
+      print('AuthProvider: Reset loading state for failed login'); // Debug log
+
+      // ALWAYS rethrow ALL errors so UI can show them
+      print('AuthProvider: Rethrowing ALL errors to UI: $e'); // Debug log
       rethrow;
     }
   }
@@ -106,7 +121,9 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
           );
           print('Firestore profile created successfully'); // Debug log
         } catch (firestoreError) {
-          print('Firestore profile creation failed (non-critical): $firestoreError'); // Debug log
+          print(
+            'Firestore profile creation failed (non-critical): $firestoreError',
+          ); // Debug log
           // Don't fail registration if Firestore is not available
         }
 
@@ -119,15 +136,17 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
       // Don't set error state for successful registration
     } catch (e) {
       print('Registration error: $e'); // Debug log
-      
+
       // Check if user was actually created successfully
       final currentUser = _authService.currentUser;
       if (currentUser != null) {
-        print('User was created successfully despite error: ${currentUser.uid}'); // Debug log
+        print(
+          'User was created successfully despite error: ${currentUser.uid}',
+        ); // Debug log
         // Don't rethrow if user was created successfully
         return;
       }
-      
+
       // Only rethrow if user creation actually failed
       rethrow;
     }
@@ -188,11 +207,26 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     }
   }
 
+  // Re-authenticate user with password
+  Future<void> reauthenticateWithPassword(String email, String password) async {
+    try {
+      print('AuthProvider: Re-authenticating user with email: $email');
+      await _authService.reauthenticateWithPassword(email, password);
+      print('AuthProvider: Re-authentication successful');
+    } catch (e) {
+      print('AuthProvider: Re-authentication failed: $e');
+      rethrow;
+    }
+  }
+
   // Update user password
   Future<void> updateUserPassword(String newPassword) async {
     try {
+      print('AuthProvider: Updating user password');
       await _authService.updateUserPassword(newPassword);
+      print('AuthProvider: Password update successful');
     } catch (e) {
+      print('AuthProvider: Password update failed: $e');
       rethrow;
     }
   }

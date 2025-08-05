@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../page/favorite/productfavorite.dart';
 import '../page/order/mainorder.dart';
 import '../page/personal/mainpersonal.dart';
+import '../page/home/homewidget.dart';
 import '../providers/auth_provider.dart';
 
 class MainPage extends ConsumerStatefulWidget {
@@ -21,9 +22,11 @@ class _MainPageState extends ConsumerState<MainPage> {
 
     return authState.when(
       data: (user) {
+        print('MainPage: Building with user: ${user?.uid}'); // Debug log
+
         // Danh sách các trang
         List<Widget> pages = [
-          const HomePage(), // Trang chủ - simplified for now
+          const HomeWidget(user: null), // Trang chủ - using proper HomeWidget
           const ProductFavorite(), // Trang yêu thích
           const MainOrder(), // Trang đơn hàng - will be updated to use Firebase Auth
           const ProfilePage(), // Trang cá nhân
@@ -111,22 +114,5 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // MainPersonalPage now handles Firebase Auth internally
     return const MainPersonalPage();
-  }
-}
-
-// Simple home page placeholder
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Trang chủ',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
   }
 }

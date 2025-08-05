@@ -18,7 +18,6 @@ class _LoginWithFirebaseScreenState
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -27,15 +26,28 @@ class _LoginWithFirebaseScreenState
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // Add listener to reset form when screen becomes visible
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _resetForm();
+    });
+  }
+
+  void _resetForm() {
+    setState(() {
+      _isPasswordVisible = false;
+    });
+    _emailController.clear();
+    _passwordController.clear();
+  }
+
   Future<void> _signIn() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       _showSnackBar('Vui lòng nhập đầy đủ thông tin');
       return;
     }
-
-    setState(() {
-      _isLoading = true;
-    });
 
     try {
       await ref
@@ -45,75 +57,115 @@ class _LoginWithFirebaseScreenState
             _passwordController.text,
           );
 
-      // Show success message
+      // Show success message and navigate to home page
       if (mounted) {
         _showSnackBar('Đăng nhập thành công!', isSuccess: true);
-      }
 
-      // Navigation will be handled by the AuthWrapper
-      // No need to navigate manually here
+        // Navigate to home page after successful login
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const MainPage()),
+        );
+      }
     } catch (e) {
+      // Always show error for failed login attempts
       if (mounted) {
+        // ALWAYS show error message for failed login attempts
         String errorMessage = 'Đăng nhập thất bại';
 
         // Parse Firebase Auth errors
-        if (e.toString().contains('user-not-found')) {
+        String errorStr = e.toString().toLowerCase();
+
+        if (errorStr.contains('user-not-found')) {
           errorMessage = 'Không tìm thấy tài khoản với email này.';
-        } else if (e.toString().contains('wrong-password')) {
+        } else if (errorStr.contains('wrong-password')) {
           errorMessage = 'Mật khẩu không đúng.';
-        } else if (e.toString().contains('user-disabled')) {
+        } else if (errorStr.contains('user-disabled')) {
           errorMessage = 'Tài khoản này đã bị vô hiệu hóa.';
-        } else if (e.toString().contains('too-many-requests')) {
+        } else if (errorStr.contains('too-many-requests')) {
           errorMessage = 'Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau.';
-        } else if (e.toString().contains('invalid-email')) {
+        } else if (errorStr.contains('email address is not valid') ||
+            errorStr.contains('email is not valid') ||
+            errorStr.contains('badly formatted') ||
+            errorStr.contains('invalid-email')) {
           errorMessage = 'Email không hợp lệ.';
-        } else if (e.toString().contains('user-disabled')) {
-          errorMessage = 'Tài khoản này đã bị vô hiệu hóa.';
+        } else if (errorStr.contains('auth credential is incorrect') ||
+            errorStr.contains('the supplied auth credential is incorrect') ||
+            errorStr.contains('malformed') ||
+            errorStr.contains('expired') ||
+            errorStr.contains('authentication failed')) {
+          errorMessage = 'Email hoặc mật khẩu không đúng.';
         } else {
           errorMessage = 'Đăng nhập thất bại: ${e.toString()}';
         }
 
-        _showSnackBar(errorMessage);
-        print('Login error details: $e'); // Debug print for exact error
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        _showErrorDialog(errorMessage);
       }
     }
   }
 
   void _showSnackBar(String message, {bool isSuccess = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(
-              isSuccess ? Icons.check_circle : Icons.error,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                message,
-                style: const TextStyle(
+    try {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(
+                  isSuccess ? Icons.check_circle : Icons.error,
                   color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
                 ),
-              ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        backgroundColor: isSuccess ? Colors.green : Colors.red,
-        duration: Duration(seconds: isSuccess ? 2 : 3),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        margin: const EdgeInsets.all(16),
-      ),
-    );
+            backgroundColor: isSuccess ? Colors.green : Colors.red,
+            duration: Duration(seconds: isSuccess ? 2 : 3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    } catch (e) {
+      // Silent error handling for SnackBar
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    try {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Lỗi đăng nhập'),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      // Silent error handling for Dialog
+    }
   }
 
   @override
@@ -255,53 +307,25 @@ class _LoginWithFirebaseScreenState
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: _isLoading ? null : _signIn,
+                              onPressed: _signIn,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF8B4513),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child:
-                                  _isLoading
-                                      ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                      : const Text(
-                                        'Đăng nhập',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                              child: const Text(
+                                'Đăng nhập',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
 
                           const SizedBox(height: 16),
-
-                          // Debug button (temporary)
-                          TextButton(
-                            onPressed: () {
-                              final currentUser = ref.read(authProvider).value;
-                              final isEmailVerified =
-                                  ref
-                                      .read(authProvider.notifier)
-                                      .isEmailVerified;
-                              print('Debug: Current user: ${currentUser?.uid}');
-                              print('Debug: Email verified: $isEmailVerified');
-                              _showSnackBar(
-                                'User: ${currentUser?.uid ?? "null"}, Verified: $isEmailVerified',
-                              );
-                            },
-                            child: const Text(
-                              'Debug Auth State',
-                              style: TextStyle(
-                                color: Color(0xFF8B4513),
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
 
                           // Forgot password
                           TextButton(

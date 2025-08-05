@@ -122,72 +122,7 @@ class MainPersonalPage extends ConsumerWidget {
                       ),
                     ),
 
-                    // User Info Card
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: const Color(0xFFD2691E).withOpacity(0.3),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Thông tin tài khoản',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF8B4513),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          _buildInfoRow('User ID:', user.uid),
-                          _buildInfoRow('Email:', user.email ?? 'N/A'),
-                          _buildInfoRow(
-                            'Email Verified:',
-                            user.emailVerified
-                                ? 'Đã xác thực'
-                                : 'Chưa xác thực',
-                          ),
-                          if (userProfile?.displayName != null)
-                            _buildInfoRow(
-                              'Tên hiển thị:',
-                              userProfile!.displayName!,
-                            ),
-                          if (userProfile?.phoneNumber != null)
-                            _buildInfoRow(
-                              'Số điện thoại:',
-                              userProfile!.phoneNumber!,
-                            ),
-                          if (userProfile?.address != null)
-                            _buildInfoRow('Địa chỉ:', userProfile!.address!),
-                          _buildInfoRow(
-                            'Ngày tạo:',
-                            _formatDate(user.metadata.creationTime),
-                          ),
-                          _buildInfoRow(
-                            'Đăng nhập lần cuối:',
-                            _formatDate(user.metadata.lastSignInTime),
-                          ),
-                        ],
-                      ),
-                    ),
-
                     // Menu Items
-                    _buildMenuItem(
-                      icon: Icons.person_outline,
-                      title: 'Thông tin cá nhân',
-                      onTap: () {
-                        _showUserInfoDialog(context, userProfile, user);
-                      },
-                    ),
-                    const SizedBox(height: 16),
-
                     _buildMenuItem(
                       icon: Icons.info_outline,
                       title: 'Giới thiệu',
@@ -323,39 +258,6 @@ class MainPersonalPage extends ConsumerWidget {
     return 'U';
   }
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return 'N/A';
-    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Color(0xFF8B4513),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 13, color: Color(0xFF8B4513)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildMenuItem({
     required IconData icon,
     required String title,
@@ -398,63 +300,6 @@ class MainPersonalPage extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _showUserInfoDialog(
-    BuildContext context,
-    UserProfile? userProfile,
-    dynamic user,
-  ) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFFF5E6D3),
-          title: const Text(
-            'Thông tin chi tiết',
-            style: TextStyle(
-              color: Color(0xFF8B4513),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildInfoRow('User ID:', user.uid),
-              _buildInfoRow('Email:', user.email ?? 'N/A'),
-              _buildInfoRow(
-                'Email Verified:',
-                user.emailVerified ? 'Đã xác thực' : 'Chưa xác thực',
-              ),
-              if (userProfile?.displayName != null)
-                _buildInfoRow('Tên hiển thị:', userProfile!.displayName!),
-              if (userProfile?.phoneNumber != null)
-                _buildInfoRow('Số điện thoại:', userProfile!.phoneNumber!),
-              if (userProfile?.address != null)
-                _buildInfoRow('Địa chỉ:', userProfile!.address!),
-              _buildInfoRow(
-                'Ngày tạo:',
-                _formatDate(user.metadata.creationTime),
-              ),
-              _buildInfoRow(
-                'Đăng nhập lần cuối:',
-                _formatDate(user.metadata.lastSignInTime),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text(
-                'Đóng',
-                style: TextStyle(color: Color(0xFF8B4513)),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

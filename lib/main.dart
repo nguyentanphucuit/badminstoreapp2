@@ -51,7 +51,7 @@ class MainApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const StartScreen(),
+      home: const AuthWrapper(),
     );
   }
 }

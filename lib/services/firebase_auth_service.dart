@@ -86,6 +86,29 @@ class FirebaseAuthService {
     }
   }
 
+  // Re-authenticate user with password
+  Future<void> reauthenticateWithPassword(String email, String password) async {
+    try {
+      print('FirebaseAuthService: Creating credential for email: $email');
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        throw Exception('No current user found');
+      }
+
+      print('FirebaseAuthService: Re-authenticating user: ${currentUser.uid}');
+      await currentUser.reauthenticateWithCredential(credential);
+      print('FirebaseAuthService: Re-authentication successful');
+    } catch (e) {
+      print('FirebaseAuthService: Re-authentication error: $e');
+      throw _handleAuthError(e);
+    }
+  }
+
   // Update user profile
   Future<void> updateUserProfile({
     String? displayName,
@@ -111,8 +134,18 @@ class FirebaseAuthService {
   // Update user password
   Future<void> updateUserPassword(String newPassword) async {
     try {
-      await _auth.currentUser?.updatePassword(newPassword);
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        throw Exception('No current user found');
+      }
+
+      print(
+        'FirebaseAuthService: Updating password for user: ${currentUser.uid}',
+      );
+      await currentUser.updatePassword(newPassword);
+      print('FirebaseAuthService: Password update successful');
     } catch (e) {
+      print('FirebaseAuthService: Password update error: $e');
       throw _handleAuthError(e);
     }
   }
@@ -128,7 +161,15 @@ class FirebaseAuthService {
 
   // Handle Firebase Auth errors
   String _handleAuthError(dynamic error) {
+    print('FirebaseAuthService: Handling error: $error');
+    print('FirebaseAuthService: Error type: ${error.runtimeType}');
+
     if (error is FirebaseAuthException) {
+      print('FirebaseAuthService: FirebaseAuthException code: ${error.code}');
+      print(
+        'FirebaseAuthService: FirebaseAuthException message: ${error.message}',
+      );
+
       switch (error.code) {
         case 'user-not-found':
           return 'No user found with this email address.';
@@ -146,11 +187,21 @@ class FirebaseAuthService {
           return 'Too many requests. Please try again later.';
         case 'operation-not-allowed':
           return 'This operation is not allowed.';
+        case 'requires-recent-login':
+          return 'This operation requires recent authentication.';
+        case 'network-request-failed':
+          return 'Network request failed. Please check your internet connection.';
         default:
           return 'Authentication failed: ${error.message}';
       }
     }
-    return 'An unexpected error occurred.';
+
+    // Handle other types of errors
+    if (error.toString().contains('network')) {
+      return 'Network error. Please check your internet connection.';
+    }
+
+    return 'An unexpected error occurred: ${error.toString()}';
   }
 }
 

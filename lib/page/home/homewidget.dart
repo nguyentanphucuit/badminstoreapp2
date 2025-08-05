@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import '../home/mainhome.dart'; // Import MainHome
 import '../search/search.dart';
 import '../cart/productcart.dart';
-import '../../data/model/usermodel.dart';
 
 class HomeWidget extends StatelessWidget {
-  final UserModel? user;
+  final dynamic user; // Changed to dynamic to accept null
 
-  const HomeWidget({Key? key, required this.user}) : super(key: key);
+  const HomeWidget({Key? key, this.user}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    print('HomeWidget: Building home page'); // Debug log
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFFDF1E8), // Màu nền của AppBar
@@ -31,13 +31,16 @@ class HomeWidget extends StatelessWidget {
         centerTitle: true, // Căn giữa logo
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart, color: Colors.black), // Icon giỏ hàng
+            icon: Icon(
+              Icons.shopping_cart,
+              color: Colors.black,
+            ), // Icon giỏ hàng
             onPressed: () {
               // Xử lý khi nhấn icon giỏ hàng
               Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EmptyCartPage(user: user)),
-                      );
+                context,
+                MaterialPageRoute(builder: (context) => const ProductCart()),
+              );
             },
           ),
         ],
