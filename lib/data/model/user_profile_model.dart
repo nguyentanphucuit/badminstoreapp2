@@ -25,15 +25,25 @@ class UserProfile {
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
-      uid: map['uid'] ?? '',
-      email: map['email'] ?? '',
-      displayName: map['displayName'] ?? '',
-      phoneNumber: map['phoneNumber'] ?? '',
-      address: map['address'] ?? '',
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
-      updatedAt: (map['updatedAt'] as Timestamp).toDate(),
-      isActive: map['isActive'] ?? true,
-      photoURL: map['photoURL'],
+      uid: map['uid']?.toString() ?? '',
+      email: map['email']?.toString() ?? '',
+      displayName: map['displayName']?.toString() ?? '',
+      phoneNumber: map['phoneNumber']?.toString() ?? '',
+      address: map['address']?.toString() ?? '',
+      createdAt:
+          map['createdAt'] != null
+              ? (map['createdAt'] is Timestamp
+                  ? (map['createdAt'] as Timestamp).toDate()
+                  : DateTime.now())
+              : DateTime.now(),
+      updatedAt:
+          map['updatedAt'] != null
+              ? (map['updatedAt'] is Timestamp
+                  ? (map['updatedAt'] as Timestamp).toDate()
+                  : DateTime.now())
+              : DateTime.now(),
+      isActive: map['isActive'] == true,
+      photoURL: map['photoURL']?.toString(),
     );
   }
 

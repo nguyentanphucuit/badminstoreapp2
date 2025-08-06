@@ -172,27 +172,27 @@ class FirebaseAuthService {
 
       switch (error.code) {
         case 'user-not-found':
-          return 'No user found with this email address.';
+          return 'Không tìm thấy tài khoản với email này. Vui lòng kiểm tra lại email hoặc đăng ký tài khoản mới.';
         case 'wrong-password':
-          return 'Wrong password provided.';
+          return 'Mật khẩu không đúng. Vui lòng thử lại.';
         case 'email-already-in-use':
-          return 'An account already exists with this email address.';
+          return 'Email này đã được sử dụng bởi tài khoản khác.';
         case 'weak-password':
-          return 'The password provided is too weak.';
+          return 'Mật khẩu quá yếu. Vui lòng chọn mật khẩu mạnh hơn.';
         case 'invalid-email':
-          return 'The email address is not valid.';
+          return 'Email không hợp lệ. Vui lòng kiểm tra lại.';
         case 'user-disabled':
-          return 'This user account has been disabled.';
+          return 'Tài khoản này đã bị vô hiệu hóa.';
         case 'too-many-requests':
-          return 'Too many requests. Please try again later.';
+          return 'Quá nhiều yêu cầu. Vui lòng thử lại sau.';
         case 'operation-not-allowed':
-          return 'This operation is not allowed.';
+          return 'Thao tác này không được phép.';
         case 'requires-recent-login':
-          return 'This operation requires recent authentication.';
+          return 'Thao tác này yêu cầu đăng nhập gần đây.';
         case 'network-request-failed':
-          return 'Network request failed. Please check your internet connection.';
+          return 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet.';
         default:
-          return 'Authentication failed: ${error.message}';
+          return 'Lỗi xác thực: ${error.message}';
       }
     }
 

@@ -3,13 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/model/ordermodel.dart';
 import '../../data/model/orderdetailmodel.dart';
 import '../../data/model/productmodel.dart';
-import '../../data/model/usermodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/firestore_service.dart';
 import '../order/orderbody.dart';
 
 class MainOrder extends ConsumerStatefulWidget {
-  final dynamic user; // Accept either UserModel or Firebase User
+  final dynamic user; // Accept Firebase User
 
   const MainOrder({Key? key, this.user}) : super(key: key);
 
@@ -157,11 +156,9 @@ class _MainOrderState extends ConsumerState<MainOrder>
     }
   }
 
-  // Get user display name for different user types
+  // Get user display name for Firebase User
   String? _getUserDisplayName() {
-    if (widget.user is UserModel) {
-      return widget.user.fullname;
-    } else if (widget.user is User) {
+    if (widget.user is User) {
       return widget.user.displayName ?? widget.user.email;
     }
     return null;

@@ -103,18 +103,6 @@ class MainPersonalPage extends ConsumerWidget {
                                     color: Color(0xFF8B4513),
                                   ),
                                 ),
-                                if (userProfile?.phoneNumber != null &&
-                                    userProfile!.phoneNumber!.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 2),
-                                    child: Text(
-                                      userProfile!.phoneNumber!,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xFF8B4513),
-                                      ),
-                                    ),
-                                  ),
                               ],
                             ),
                           ),

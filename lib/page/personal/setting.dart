@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../login_register_forget/login_with_firebase.dart';
 import '../personal/changepassword.dart';
+import '../personal/edit_profile.dart';
 import '../../providers/auth_provider.dart';
 
 class SettingPage extends ConsumerWidget {
@@ -41,7 +42,12 @@ class SettingPage extends ConsumerWidget {
               icon: Icons.person_outline,
               title: 'Sửa thông tin cá nhân',
               onTap: () {
-                // Navigate to personal info page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EditProfilePage(),
+                  ),
+                );
               },
             ),
             const SizedBox(height: 16),

@@ -61,12 +61,25 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     try {
       state = const AsyncValue.loading();
-      print('AuthProvider: Starting sign in for email: $email'); // Debug log
+      print('AuthProvider: Starting sign in for email: $email');
       await _authService.signInWithEmailAndPassword(email, password);
-      print('AuthProvider: Sign in successful'); // Debug log
+      print('AuthProvider: Sign in successful');
+
+      // Update last login time in Firestore
+      final currentUser = _authService.currentUser;
+      if (currentUser != null) {
+        try {
+          await _firestoreService.updateLastLogin(currentUser.uid);
+          print('✅ Last login time updated in Firestore');
+        } catch (e) {
+          print('❌ Failed to update last login time: $e');
+          // Don't fail sign in if this fails
+        }
+      }
+
       // Don't set error state here, let the auth state listener handle it
     } catch (e) {
-      print('AuthProvider: Sign in error: $e'); // Debug log
+      print('AuthProvider: Sign in error: $e');
 
       // Check if user was actually logged in despite the error
       final currentUser = _authService.currentUser;
@@ -74,16 +87,16 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
         // User was logged in successfully, don't rethrow
         print(
           'AuthProvider: User logged in successfully despite error: ${currentUser.uid}',
-        ); // Debug log
+        );
         return;
       }
 
       // Reset loading state for failed login
       state = const AsyncValue.data(null);
-      print('AuthProvider: Reset loading state for failed login'); // Debug log
+      print('AuthProvider: Reset loading state for failed login');
 
       // ALWAYS rethrow ALL errors so UI can show them
-      print('AuthProvider: Rethrowing ALL errors to UI: $e'); // Debug log
+      print('AuthProvider: Rethrowing ALL errors to UI: $e');
       rethrow;
     }
   }
@@ -109,9 +122,14 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
         'Firebase Auth user created: ${userCredential.user?.uid}',
       ); // Debug log
 
-      // Create user profile in Firestore (optional - won't fail registration if Firestore is not available)
+      // Create user profile in Firestore after successful Firebase Auth registration
       if (userCredential.user != null) {
         try {
+          print('🔍 DEBUG: About to create Firestore profile');
+          print('🔍 DEBUG: User UID: ${userCredential.user!.uid}');
+          print('🔍 DEBUG: User Email: $email');
+          print('🔍 DEBUG: FirestoreService instance: $_firestoreService');
+
           await _firestoreService.createUserProfile(
             uid: userCredential.user!.uid,
             email: email,
@@ -119,17 +137,19 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
             phoneNumber: phoneNumber,
             address: address,
           );
-          print('Firestore profile created successfully'); // Debug log
+          print('✅ Firestore profile created successfully for user: $email');
         } catch (firestoreError) {
-          print(
-            'Firestore profile creation failed (non-critical): $firestoreError',
-          ); // Debug log
+          print('❌ Firestore profile creation failed: $firestoreError');
+          print('❌ Firestore error type: ${firestoreError.runtimeType}');
+          print('❌ Firestore error details: $firestoreError');
           // Don't fail registration if Firestore is not available
+          // User can still use the app, profile can be created later
         }
 
         // User is automatically signed in after successful registration
-        // No need to sign out - let them stay logged in
-        print('User automatically signed in after registration'); // Debug log
+        print(
+          '✅ User automatically signed in after registration: ${userCredential.user!.uid}',
+        );
       }
 
       print('Registration completed successfully'); // Debug log

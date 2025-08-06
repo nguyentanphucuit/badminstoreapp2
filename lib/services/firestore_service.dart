@@ -39,7 +39,15 @@ class FirestoreService {
     String? address,
   }) async {
     try {
-      await usersCollection.doc(uid).set({
+      print('🔍 DEBUG: Starting createUserProfile');
+      print('🔍 DEBUG: UID: $uid');
+      print('🔍 DEBUG: Email: $email');
+      print('🔍 DEBUG: Display Name: $displayName');
+      print('🔍 DEBUG: Phone: $phoneNumber');
+      print('🔍 DEBUG: Address: $address');
+      print('🔍 DEBUG: Collection: ${FirebaseConfig.usersCollection}');
+
+      final userData = {
         'uid': uid,
         'email': email,
         'displayName': displayName ?? '',
@@ -48,8 +56,35 @@ class FirestoreService {
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
         'isActive': true,
-      });
+        'emailVerified': false,
+        'registrationDate': FieldValue.serverTimestamp(),
+        'lastLoginAt': FieldValue.serverTimestamp(),
+        'profileComplete':
+            (displayName != null && displayName.isNotEmpty) &&
+            (phoneNumber != null && phoneNumber.isNotEmpty) &&
+            (address != null && address.isNotEmpty),
+      };
+
+      print('🔍 DEBUG: User data to save: $userData');
+      print('🔍 DEBUG: About to save to Firestore...');
+
+      await usersCollection.doc(uid).set(userData);
+
+      print('✅ User profile created successfully in Firestore for: $email');
+      print('✅ Document path: ${usersCollection.doc(uid).path}');
+
+      // Verify the data was saved
+      final savedDoc = await usersCollection.doc(uid).get();
+      if (savedDoc.exists) {
+        print('✅ Verification: Document exists in Firestore');
+        print('✅ Verification: Saved data: ${savedDoc.data()}');
+      } else {
+        print('❌ Verification: Document does not exist in Firestore');
+      }
     } catch (e) {
+      print('❌ Failed to create user profile in Firestore: $e');
+      print('❌ Error type: ${e.runtimeType}');
+      print('❌ Error details: $e');
       throw 'Failed to create user profile: $e';
     }
   }
@@ -69,6 +104,32 @@ class FirestoreService {
       await usersCollection.doc(uid).update(data);
     } catch (e) {
       throw 'Failed to update user profile: $e';
+    }
+  }
+
+  // Update user's last login time
+  Future<void> updateLastLogin(String uid) async {
+    try {
+      await usersCollection.doc(uid).update({
+        'lastLoginAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Failed to update last login time: $e');
+      // Don't throw error as this is not critical
+    }
+  }
+
+  // Check if email exists in Firestore users collection
+  Future<bool> checkEmailExistsInFirestore(String email) async {
+    try {
+      final querySnapshot =
+          await usersCollection.where('email', isEqualTo: email).limit(1).get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Error checking email existence in Firestore: $e');
+      return false;
     }
   }
 
@@ -872,6 +933,25 @@ class FirestoreService {
       }).toList();
     } catch (e) {
       throw 'Failed to search products: $e';
+    }
+  }
+
+  // Test Firestore connectivity
+  Future<bool> testFirestoreConnection() async {
+    try {
+      print('🔍 DEBUG: Testing Firestore connection...');
+
+      // Try to read from users collection
+      final querySnapshot = await usersCollection.limit(1).get();
+      print('✅ Firestore connection successful');
+      print('✅ Users collection accessible');
+      print('✅ Document count: ${querySnapshot.docs.length}');
+
+      return true;
+    } catch (e) {
+      print('❌ Firestore connection failed: $e');
+      print('❌ Error type: ${e.runtimeType}');
+      return false;
     }
   }
 }

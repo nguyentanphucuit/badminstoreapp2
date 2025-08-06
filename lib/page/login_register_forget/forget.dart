@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'passcode.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/auth_provider.dart';
+import '../../services/firestore_service.dart';
 
-class ForgetPasswordScreen extends StatefulWidget {
+class ForgetPasswordScreen extends ConsumerStatefulWidget {
   const ForgetPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
+  ConsumerState<ForgetPasswordScreen> createState() =>
+      _ForgetPasswordScreenState();
 }
 
-class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
+class _ForgetPasswordScreenState extends ConsumerState<ForgetPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -38,10 +42,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFFFB382),
-              Color(0xFFFF8C42),
-            ],
+            colors: [Color(0xFFFFB382), Color(0xFFFF8C42)],
           ),
         ),
         child: SafeArea(
@@ -52,11 +53,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 const SizedBox(height: 20),
 
                 // Logo
-                Image.asset(
-                  'assets/images/logo.png',
-                  width: 100,
-                  height: 100,
-                ),
+                Image.asset('assets/images/logo.png', width: 100, height: 100),
                 const SizedBox(height: 12),
 
                 // Shopname
@@ -131,10 +128,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   height: 56,
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFFFF8C42),
-                        Color(0xFFFF6B1A),
-                      ],
+                      colors: [Color(0xFFFF8C42), Color(0xFFFF6B1A)],
                     ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
@@ -146,12 +140,102 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     ],
                   ),
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const PasscodeScreen()),
-                      );
-                    },
+                    onPressed:
+                        _isLoading
+                            ? null
+                            : () async {
+                              final email = _emailController.text.trim();
+                              if (email.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Vui lòng nhập email'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              // Basic email validation
+                              final emailRegex = RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              );
+                              if (!emailRegex.hasMatch(email)) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Email không hợp lệ'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              setState(() {
+                                _isLoading = true;
+                              });
+
+                              try {
+                                // First check if email exists in Firestore
+                                final firestoreService = FirestoreService();
+                                final emailExists = await firestoreService
+                                    .checkEmailExistsInFirestore(email);
+
+                                if (!emailExists) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Không tìm thấy tài khoản với email này. Vui lòng kiểm tra lại email hoặc đăng ký tài khoản mới.',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                // If email exists in Firestore, send reset email
+                                await ref
+                                    .read(authProvider.notifier)
+                                    .sendPasswordResetEmail(email);
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Email khôi phục mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư và thư mục spam.',
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              } catch (e) {
+                                String errorMessage = 'Lỗi khôi phục mật khẩu';
+
+                                if (e.toString().contains('user-not-found')) {
+                                  errorMessage =
+                                      'Không tìm thấy tài khoản với email này.';
+                                } else if (e.toString().contains(
+                                  'invalid-email',
+                                )) {
+                                  errorMessage = 'Email không hợp lệ.';
+                                } else if (e.toString().contains(
+                                  'too-many-requests',
+                                )) {
+                                  errorMessage =
+                                      'Quá nhiều yêu cầu. Vui lòng thử lại sau.';
+                                } else {
+                                  errorMessage = 'Lỗi: $e';
+                                }
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(errorMessage),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              } finally {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              }
+                            },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
@@ -159,14 +243,24 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'Khôi phục',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child:
+                        _isLoading
+                            ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                            : const Text(
+                              'Khôi phục',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                   ),
                 ),
                 const SizedBox(height: 50),

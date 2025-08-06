@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/firestore_service.dart';
 import '../mainpage.dart';
 import 'login_with_firebase.dart';
 
@@ -101,6 +102,23 @@ class _RegisterWithFirebaseScreenState
             address: _addressController.text.trim(),
           );
 
+      // Additional direct Firestore update as backup
+      try {
+        final currentUser = ref.read(authProvider).value;
+        if (currentUser != null) {
+          final firestoreService = FirestoreService();
+          await firestoreService.createUserProfile(
+            uid: currentUser.uid,
+            email: _emailController.text.trim(),
+            displayName: _fullNameController.text.trim(),
+            phoneNumber: _phoneController.text.trim(),
+            address: _addressController.text.trim(),
+          );
+        }
+      } catch (firestoreError) {
+        // Don't fail registration if this fails
+      }
+
       if (mounted) {
         // Clear form data
         _clearForm();
@@ -112,8 +130,6 @@ class _RegisterWithFirebaseScreenState
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const MainPage()),
         );
-
-        print('Registration completed successfully - Navigated to home page');
       }
     } catch (e) {
       if (mounted) {
@@ -122,7 +138,6 @@ class _RegisterWithFirebaseScreenState
         if (currentUser != null) {
           // User was created successfully, show success message
           _showSnackBar('Đăng ký thành công!', isSuccess: true);
-          print('Registration successful despite error: $e'); // Debug print
 
           // Clear form - AuthWrapper will handle navigation to main page
           _clearForm();
@@ -145,7 +160,6 @@ class _RegisterWithFirebaseScreenState
         }
 
         _showSnackBar(errorMessage);
-        print('Registration error: $e'); // Add debug print
       }
     } finally {
       if (mounted) {
@@ -436,6 +450,8 @@ class _RegisterWithFirebaseScreenState
                   ),
 
                   const SizedBox(height: 30),
+
+                  const SizedBox(height: 16),
 
                   // Register button
                   SizedBox(
