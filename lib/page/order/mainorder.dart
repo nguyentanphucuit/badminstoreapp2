@@ -6,6 +6,7 @@ import '../../data/model/productmodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/firestore_service.dart';
 import '../order/orderbody.dart';
+import '../mainpage.dart';
 
 class MainOrder extends ConsumerStatefulWidget {
   final dynamic user; // Accept Firebase User
@@ -393,33 +394,16 @@ class _MainOrderState extends ConsumerState<MainOrder>
           if (selectedFilter == 'all') ...[
             ElevatedButton.icon(
               onPressed: () {
-                // Navigate to shopping page (home tab)
-                Navigator.pop(context);
+                // Navigate to home page by going back to main page
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const MainPage()),
+                  (route) => false,
+                );
               },
               icon: const Icon(Icons.shopping_cart),
               label: const Text('Mua sắm ngay'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue[600],
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Test button to debug Firebase connection
-                _testFirebaseConnection();
-              },
-              icon: const Icon(Icons.bug_report),
-              label: const Text('Test Firebase'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange[600],
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
