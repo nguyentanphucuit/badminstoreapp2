@@ -6,7 +6,8 @@ import '../../conf/const.dart';
 import '../../page/category/maincategory.dart'; // Import MainCategoryPage
 
 class CategoryList extends StatefulWidget {
-  final Function(int)? onCategorySelected; // Thêm callback để thông báo danh mục được chọn
+  final Function(int)?
+  onCategorySelected; // Thêm callback để thông báo danh mục được chọn
 
   const CategoryList({Key? key, this.onCategorySelected}) : super(key: key);
 
@@ -43,15 +44,16 @@ class _CategoryListState extends State<CategoryList> {
   }
 
   void startAutoScroll() {
-    if (categories.length <= 4) return; // Không cần cuộn nếu ít hơn hoặc bằng 4 danh mục
-    
+    if (categories.length <= 4)
+      return; // Không cần cuộn nếu ít hơn hoặc bằng 4 danh mục
+
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_pageController.hasClients) {
         int nextPage = (_pageController.page?.round() ?? 0) + 1;
-        
+
         // Tính toán số trang tối đa (8 danh mục, hiển thị 4 mỗi trang)
         int maxPages = (categories.length / 4).ceil();
-        
+
         if (nextPage >= maxPages) {
           // Quay lại trang đầu tiên
           _pageController.animateToPage(
@@ -79,7 +81,8 @@ class _CategoryListState extends State<CategoryList> {
   }
 
   Widget buildCategoryItem(CategoryModel category) {
-    return GestureDetector( // Bọc bằng GestureDetector để xử lý sự kiện click
+    return GestureDetector(
+      // Bọc bằng GestureDetector để xử lý sự kiện click
       onTap: () {
         if (widget.onCategorySelected != null) {
           widget.onCategorySelected!(category.id!); // Gọi callback nếu có
@@ -89,7 +92,9 @@ class _CategoryListState extends State<CategoryList> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => MainCategoryPage(initialCategoryId: category.id!),
+              builder:
+                  (context) =>
+                      MainCategoryPage(initialCategoryId: category.id!),
             ),
           );
         }
@@ -108,18 +113,14 @@ class _CategoryListState extends State<CategoryList> {
                 shape: BoxShape.circle,
               ),
               child: ClipOval(
-                child: Image.asset(
-                  '$uri_category_img${category.image}',
-                  width: 20,
-                  height: 20,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
-                      Icons.category,
-                      size: 30,
-                      color: Colors.brown,
-                    );
-                  },
+                child: Container(
+                  margin: EdgeInsets.all(15),
+                  child: Image.asset(
+                    '$uri_category_img${category.image}',
+                    width: 30,
+                    height: 30,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
@@ -133,7 +134,7 @@ class _CategoryListState extends State<CategoryList> {
                 color: Colors.brown[800],
               ),
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ],
@@ -145,9 +146,10 @@ class _CategoryListState extends State<CategoryList> {
   Widget buildCategoryPage(List<CategoryModel> pageCategories) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: pageCategories.map((category) => 
-        Expanded(child: buildCategoryItem(category))
-      ).toList(),
+      children:
+          pageCategories
+              .map((category) => Expanded(child: buildCategoryItem(category)))
+              .toList(),
     );
   }
 
@@ -156,25 +158,26 @@ class _CategoryListState extends State<CategoryList> {
     if (isLoading) {
       return Container(
         height: 120,
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (categories.isEmpty) {
       return Container(
         height: 120,
-        child: const Center(
-          child: Text('Không có danh mục nào'),
-        ),
+        child: const Center(child: Text('Không có danh mục nào')),
       );
     }
 
     // Chia danh mục thành các trang (mỗi trang 4 danh mục)
     List<List<CategoryModel>> pages = [];
     for (int i = 0; i < categories.length; i += 4) {
-      pages.add(categories.sublist(i, i + 4 > categories.length ? categories.length : i + 4));
+      pages.add(
+        categories.sublist(
+          i,
+          i + 4 > categories.length ? categories.length : i + 4,
+        ),
+      );
     }
 
     return Container(
