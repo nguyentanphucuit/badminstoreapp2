@@ -198,12 +198,24 @@ class _OrderConfirmScreenState extends State<OrderConfirmScreen> {
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'thank.dart';
-import '../../data/model/product_viewmodel.dart'; // Thêm dòng này để dùng productsProvider
+import '../../data/model/product_viewmodel.dart';
 import '../../data/model/usermodel.dart';
+import '../../data/model/cartitemmodel.dart';
+import '../../services/firestore_service.dart';
 
 class OrderConfirmScreen extends ConsumerWidget {
   final UserModel? user;
-   const OrderConfirmScreen({Key? key, this.user}) : super(key: key);
+  final double subtotal;
+  final Map<String, String> shippingInfo;
+  final String paymentMethod;
+
+  const OrderConfirmScreen({
+    Key? key,
+    this.user,
+    required this.subtotal,
+    required this.shippingInfo,
+    required this.paymentMethod,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -215,10 +227,7 @@ class OrderConfirmScreen extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFFFB382),
-              Color(0xFFFF8C42),
-            ],
+            colors: [Color(0xFFFFB382), Color(0xFFFF8C42)],
           ),
         ),
         child: SafeArea(
@@ -287,10 +296,7 @@ class OrderConfirmScreen extends ConsumerWidget {
                         height: 56,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFFF8C42),
-                              Color(0xFFFF6B1A),
-                            ],
+                            colors: [Color(0xFFFF8C42), Color(0xFFFF6B1A)],
                           ),
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
@@ -302,33 +308,77 @@ class OrderConfirmScreen extends ConsumerWidget {
                           ],
                         ),
                         child: ElevatedButton(
-                          onPressed: () {
-                            // ✅ Xóa giỏ hàng đúng cách với Riverpod
-                            ref.read(productsProvider.notifier).clearCart();
+                          onPressed: () async {
+                            try {
+                              // Get cart items
+                              final cartItems = ref.read(cartItemsProvider);
 
-                            // ✅ Hiển thị thông báo
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Xác nhận thành công!',
-                                  style: TextStyle(color: Colors.white), // Màu chữ trắng
-                                ),
-                                backgroundColor: Colors.green, // Nền xanh lá
-                                duration: Duration(seconds: 2),
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            );
+                              if (cartItems.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Giỏ hàng trống!'),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                                return;
+                              }
 
-                            // ✅ Điều hướng sang trang cảm ơn
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ThankYouScreen(user: user),
-                              ),
-                            );
+                              // Create Firestore service instance
+                              final firestoreService = FirestoreService();
+
+                              // Save order to Firebase
+                              final orderId = await firestoreService.saveOrder(
+                                cartItems: cartItems,
+                                totalPrice: subtotal,
+                                shippingInfo: shippingInfo,
+                                paymentMethod: paymentMethod,
+                                orderNotes: 'Order placed via mobile app',
+                              );
+
+                              // Clear cart after successful order creation
+                              ref.read(productsProvider.notifier).clearCart();
+
+                              // Show success message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Đơn hàng đã được tạo thành công! ID: $orderId',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  backgroundColor: Colors.green,
+                                  duration: const Duration(seconds: 3),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              );
+
+                              // Navigate to thank you screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ThankYouScreen(user: user),
+                                ),
+                              );
+                            } catch (e) {
+                              // Show error message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Lỗi khi tạo đơn hàng: $e',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  backgroundColor: Colors.red,
+                                  duration: const Duration(seconds: 3),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,

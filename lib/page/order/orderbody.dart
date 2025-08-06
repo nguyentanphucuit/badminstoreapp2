@@ -10,38 +10,51 @@ import '../../page/order/orderdetail.dart';
 // import '../../page/detail/orderdetail.dart';
 
 Widget itemOrderView(
-  OrderModel orderModel, 
-  List<OrderDetailModel> orderDetails,
+  OrderModel orderModel,
+  List<OrderItemModel> orderItems,
   List<ProductModel> products,
-  WidgetRef ref
+  WidgetRef ref,
 ) {
   // Format số tiền
-  String formatCurrency(int? price) {
+  String formatCurrency(dynamic price) {
     if (price == null) return '0 đ';
-    return NumberFormat('#,###').format(price) + ' đ';
+    double priceValue =
+        price is int ? price.toDouble() : (price is double ? price : 0.0);
+    return NumberFormat('#,###').format(priceValue) + ' đ';
   }
 
   // Format ngày tháng
-  String formatDate(String? dateString) {
-    if (dateString == null) return '';
+  String formatDate(dynamic dateInput) {
+    if (dateInput == null) return '';
     try {
-      DateTime date = DateTime.parse(dateString);
+      DateTime date;
+      if (dateInput is DateTime) {
+        date = dateInput;
+      } else if (dateInput is String) {
+        date = DateTime.parse(dateInput);
+      } else {
+        return '';
+      }
       return DateFormat('dd/MM/yyyy').format(date);
     } catch (e) {
-      return dateString;
+      return '';
     }
   }
 
   // Lấy trạng thái đơn hàng
-  String getOrderStatus(int? status) {
+  String getOrderStatus(String? status) {
     switch (status) {
-      case 0:
+      case 'cancelled':
         return 'Đã hủy';
-      case 1:
+      case 'pending':
         return 'Đang xử lý';
-      case 2:
+      case 'confirmed':
+        return 'Đã xác nhận';
+      case 'processing':
+        return 'Đang xử lý';
+      case 'shipped':
         return 'Đang giao hàng';
-      case 3:
+      case 'delivered':
         return 'Hoàn tất';
       default:
         return 'Không xác định';
@@ -49,15 +62,19 @@ Widget itemOrderView(
   }
 
   // Lấy màu sắc cho trạng thái
-  Color getStatusColor(int? status) {
+  Color getStatusColor(String? status) {
     switch (status) {
-      case 0:
+      case 'cancelled':
         return Colors.red;
-      case 1:
+      case 'pending':
         return Colors.orange;
-      case 2:
+      case 'confirmed':
         return Colors.blue;
-      case 3:
+      case 'processing':
+        return Colors.purple;
+      case 'shipped':
+        return Colors.indigo;
+      case 'delivered':
         return Colors.green;
       default:
         return Colors.grey;
@@ -65,15 +82,19 @@ Widget itemOrderView(
   }
 
   // Lấy icon cho trạng thái
-  IconData getStatusIcon(int? status) {
+  IconData getStatusIcon(String? status) {
     switch (status) {
-      case 0:
+      case 'cancelled':
         return Icons.cancel;
-      case 1:
+      case 'pending':
         return Icons.hourglass_empty;
-      case 2:
+      case 'confirmed':
+        return Icons.check_circle_outline;
+      case 'processing':
+        return Icons.settings;
+      case 'shipped':
         return Icons.local_shipping;
-      case 3:
+      case 'delivered':
         return Icons.check_circle;
       default:
         return Icons.help;
@@ -83,43 +104,41 @@ Widget itemOrderView(
   // Lấy danh sách sản phẩm của đơn hàng
   List<ProductModel> getOrderProducts() {
     List<ProductModel> orderProducts = [];
-    for (var detail in orderDetails) {
-      if (detail.orderId == orderModel.id) {
+
+    // Use order items from Firebase instead of separate order details
+    if (orderModel.items != null) {
+      for (var item in orderModel.items!) {
         // First try to find product in products list
         var product = products.firstWhere(
-          (p) => p.id == detail.productId,
+          (p) => p.id.toString() == item.productId,
           orElse: () => ProductModel(),
         );
-        
-        // If product not found in products list, create from order detail
+
+        // If product not found in products list, create from order item
         if (product.id == null) {
-          String? productName;
-          if (detail.runtimeType.toString().contains('WithProductName')) {
-            productName = (detail as dynamic).productName;
-          }
-          
           product = ProductModel(
-            id: detail.productId,
-            productName: productName ?? 'Sản phẩm ${detail.productId}',
-            priceSale: detail.price,
-            image: 'default_product.jpg',
+            id: int.tryParse(item.productId ?? ''),
+            productName: item.productName ?? 'Sản phẩm ${item.productId}',
+            priceSale: item.unitPrice?.toInt(),
+            image: item.productImage ?? 'default_product.jpg',
           );
         }
-        
+
         if (product.id != null) {
           orderProducts.add(product);
         }
       }
     }
+
     return orderProducts;
   }
 
   // Đếm tổng số sản phẩm (bao gồm cả trùng lặp)
   int getTotalProductCount() {
     int count = 0;
-    for (var detail in orderDetails) {
-      if (detail.orderId == orderModel.id) {
-        count += detail.quantity ?? 0;
+    if (orderModel.items != null) {
+      for (var item in orderModel.items!) {
+        count += item.quantity ?? 0;
       }
     }
     return count;
@@ -131,21 +150,22 @@ Widget itemOrderView(
   return GestureDetector(
     onTap: () {
       // Navigate to OrderDetail page when order is tapped
-      // Uncomment when OrderDetail page is available
-      /*
-      Navigator.push(
-        ref.context,
-        MaterialPageRoute(
-          builder: (context) => OrderDetail(orderId: orderModel.id!),
-        ),
-      );
-      */
-      Navigator.push(
-        ref.context,
-        MaterialPageRoute(
-          builder: (context) => OrderDetail(orderId: orderModel.id!),
-        ),
-      );
+      if (orderModel.id != null && orderModel.id!.isNotEmpty) {
+        Navigator.push(
+          ref.context,
+          MaterialPageRoute(
+            builder: (context) => OrderDetail(orderId: orderModel.id!),
+          ),
+        );
+      } else {
+        // Show error message if order ID is missing
+        ScaffoldMessenger.of(ref.context).showSnackBar(
+          SnackBar(
+            content: Text('Không thể mở chi tiết đơn hàng: ID không hợp lệ'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     },
     child: Container(
       margin: const EdgeInsets.all(8),
@@ -186,18 +206,15 @@ Widget itemOrderView(
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             // Ngày đặt hàng
             Text(
               formatDate(orderModel.orderDate),
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
-            
+
             /*
             // Hình ảnh sản phẩm (tối đa 6 hình)
             SizedBox(
@@ -249,9 +266,8 @@ Widget itemOrderView(
                 ],
               ),
             ), */
-            
             const SizedBox(height: 16),
-            
+
             // Thông tin đơn hàng (Trạng thái, Sản phẩm, Tổng tiền)
             Row(
               children: [
@@ -262,10 +278,7 @@ Widget itemOrderView(
                     children: [
                       Text(
                         'Trạng thái',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -291,7 +304,7 @@ Widget itemOrderView(
                     ],
                   ),
                 ),
-                
+
                 // Sản phẩm
                 Expanded(
                   child: Column(
@@ -299,10 +312,7 @@ Widget itemOrderView(
                     children: [
                       Text(
                         'Sản phẩm',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -316,7 +326,7 @@ Widget itemOrderView(
                     ],
                   ),
                 ),
-                
+
                 // Tổng tiền
                 Expanded(
                   child: Column(
@@ -324,10 +334,7 @@ Widget itemOrderView(
                     children: [
                       Text(
                         'Tổng tiền',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 4),
                       Text(

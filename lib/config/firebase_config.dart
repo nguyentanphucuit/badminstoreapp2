@@ -13,11 +13,12 @@ class FirebaseConfig {
   static const bool enableGoogleAuth = true;
   static const bool enablePhoneAuth = false;
 
-  // Firestore settings
+  // Collection names
   static const String usersCollection = 'users';
   static const String productsCollection = 'products';
-  static const String ordersCollection = 'orders';
   static const String categoriesCollection = 'categories';
+  static const String brandsCollection = 'brands';
+  static const String ordersCollection = 'orders';
   static const String favoritesCollection = 'favorites';
 
   // Storage settings

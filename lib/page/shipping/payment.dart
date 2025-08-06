@@ -4,10 +4,16 @@ import '../shipping/orderconfirm.dart';
 import '../../data/model/usermodel.dart';
 
 class PaymentScreen extends StatefulWidget {
-  final double subtotal; // Thêm parameter để nhận subtotal
+  final double subtotal;
   final UserModel? user;
+  final Map<String, String>? shippingInfo;
 
-  const PaymentScreen({Key? key, required this.subtotal, this.user}) : super(key: key);
+  const PaymentScreen({
+    Key? key,
+    required this.subtotal,
+    this.user,
+    this.shippingInfo,
+  }) : super(key: key);
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -15,13 +21,13 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   String _selectedPaymentMethod = 'momo'; // Default selected payment method
-  
+
   // Constants
   static const double shippingFee = 20000; // Phí vận chuyển cố định
-  
+
   // Calculated values
   double get total => widget.subtotal + shippingFee;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +76,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ],
                 ),
               ),
-              
+
               // Progress indicator
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -85,9 +91,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 30),
-              
+
               // Content
               Expanded(
                 child: SingleChildScrollView(
@@ -105,9 +111,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             color: Color(0xFF8B4513),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 16),
-                        
+
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -135,9 +141,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ],
                           ),
                         ),
-                        
+
                         const SizedBox(height: 30),
-                        
+
                         // Phương thức thanh toán
                         const Text(
                           'PHƯƠNG THỨC THANH TOÁN',
@@ -147,36 +153,36 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             color: Color(0xFF8B4513),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 16),
-                        
+
                         // Ví Momo
                         _buildPaymentOption(
                           'momo',
                           'assets/images/momo_icon_square_pinkbg_RGB.png',
                           'Ví Momo',
                         ),
-                        
+
                         const SizedBox(height: 12),
-                        
+
                         // VNPAY
                         _buildPaymentOption(
                           'vnpay',
                           'assets/images/vnpay_icon.png',
                           'VNPAY',
                         ),
-                        
+
                         const SizedBox(height: 12),
-                        
+
                         // Thanh toán bằng tiền mặt
                         _buildPaymentOption(
                           'cash',
                           'assets/images/cost_icon.png',
                           'Thanh toán bằng tiền mặt khi nhận hàng',
                         ),
-                        
+
                         const SizedBox(height: 30),
-                        
+
                         // Giá trị đơn hàng
                         const Text(
                           'GIÁ TRỊ ĐƠN HÀNG',
@@ -186,9 +192,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             color: Color(0xFF8B4513),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 16),
-                        
+
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -198,7 +204,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     'Thành tiền',
@@ -219,7 +226,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     'Phí vận chuyển',
@@ -245,7 +253,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               ),
                               const SizedBox(height: 8),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     'Tổng số tiền',
@@ -268,19 +277,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ],
                           ),
                         ),
-                        
+
                         const SizedBox(height: 40),
-                        
+
                         // Thanh toán button
                         Container(
                           width: double.infinity,
                           height: 56,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFFFF8C42),
-                                Color(0xFFFF6B1A),
-                              ],
+                              colors: [Color(0xFFFF8C42), Color(0xFFFF6B1A)],
                             ),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
@@ -305,10 +311,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   ),
                                 ),
                               );*/
-                              if (_selectedPaymentMethod == 'momo' || _selectedPaymentMethod == 'vnpay') {
+                              if (_selectedPaymentMethod == 'momo' ||
+                                  _selectedPaymentMethod == 'vnpay') {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Thanh toán đang được phát triển, vui lòng chọn phương thức COD (tiền mặt).'),
+                                    content: Text(
+                                      'Thanh toán đang được phát triển, vui lòng chọn phương thức COD (tiền mặt).',
+                                    ),
                                     backgroundColor: Colors.red,
                                     duration: Duration(seconds: 2),
                                   ),
@@ -316,9 +325,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 return;
                               }
 
+                              // Use shipping info from previous screen
+                              final shippingInfo =
+                                  widget.shippingInfo ??
+                                  {
+                                    'receiverName': 'User Name',
+                                    'receiverPhone': 'User Phone',
+                                    'shippingAddress': 'User Address',
+                                  };
+
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (_) => OrderConfirmScreen(user: widget.user)),
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => OrderConfirmScreen(
+                                        user: widget.user,
+                                        subtotal: widget.subtotal,
+                                        shippingInfo: shippingInfo,
+                                        paymentMethod: _selectedPaymentMethod,
+                                      ),
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -338,7 +364,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 30),
                       ],
                     ),
@@ -436,10 +462,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF8B4513),
-                ),
+                style: const TextStyle(fontSize: 16, color: Color(0xFF8B4513)),
               ),
             ),
           ],
@@ -466,7 +489,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
 
     _showSuccessSnackBar('Đã chọn phương thức thanh toán: $paymentMethodText');
-    
+
     // Ở đây có thể navigate tới trang kiểm tra đơn hàng
     print('Selected payment method: $_selectedPaymentMethod');
     print('Processing payment...');

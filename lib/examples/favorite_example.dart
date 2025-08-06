@@ -66,7 +66,7 @@ class _FavoriteExampleState extends ConsumerState<FavoriteExample> {
         code: 'SAMPLE001',
       );
 
-      await favoriteService.addToFavorites(sampleProduct);
+      await favoriteService.addToFavorites(sampleProduct.id.toString());
 
       // Reload favorites
       await _loadFavorites();
@@ -95,7 +95,7 @@ class _FavoriteExampleState extends ConsumerState<FavoriteExample> {
   Future<void> _removeFromFavorites(int productId) async {
     try {
       final favoriteService = ref.read(favoriteServiceProvider);
-      await favoriteService.removeFromFavorites(productId);
+      await favoriteService.removeFromFavorites(productId.toString());
 
       // Reload favorites
       await _loadFavorites();
@@ -125,7 +125,7 @@ class _FavoriteExampleState extends ConsumerState<FavoriteExample> {
     try {
       final favoriteService = ref.read(favoriteServiceProvider);
       final isInFavorites = await favoriteService.isProductInFavorites(
-        productId,
+        productId.toString(),
       );
 
       if (mounted) {

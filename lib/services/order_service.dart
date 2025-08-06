@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/model/ordermodel.dart';
 import '../data/model/cartitemmodel.dart';
 import 'firestore_service.dart';
 
@@ -7,136 +8,161 @@ class OrderService {
 
   OrderService(this._firestoreService);
 
-  /// Saves an order to Firebase Firestore
-  ///
-  /// This function creates a complete order record with:
-  /// - User ID (from Firebase Auth or provided)
-  /// - Total price
-  /// - List of products with quantities and prices
-  /// - Timestamp (server timestamp)
-  /// - Shipping information
-  /// - Payment method
-  /// - Order status
-  ///
-  /// [cartItems] - List of cart items to be ordered
-  /// [totalPrice] - Total price of the order
-  /// [shippingInfo] - Map containing receiver name, phone, and address
-  /// [paymentMethod] - Payment method (default: cash_on_delivery)
-  /// [userId] - Optional user ID (uses current user if not provided)
-  /// [orderNotes] - Optional notes for the order
-  ///
-  /// Returns the order ID as a String
-  Future<String> saveOrder({
-    required List<CartItemModel> cartItems,
-    required double totalPrice,
-    required Map<String, String> shippingInfo,
-    String? paymentMethod,
-    String? userId,
-    String? orderNotes,
-  }) async {
-    try {
-      // Validate inputs
-      if (cartItems.isEmpty) {
-        throw 'Cart items cannot be empty';
-      }
-
-      if (totalPrice <= 0) {
-        throw 'Total price must be greater than 0';
-      }
-
-      if (shippingInfo['receiverName']?.isEmpty ?? true) {
-        throw 'Receiver name is required';
-      }
-
-      if (shippingInfo['receiverPhone']?.isEmpty ?? true) {
-        throw 'Receiver phone is required';
-      }
-
-      if (shippingInfo['shippingAddress']?.isEmpty ?? true) {
-        throw 'Shipping address is required';
-      }
-
-      // Save order using FirestoreService
-      final orderId = await _firestoreService.saveOrder(
-        cartItems: cartItems,
-        totalPrice: totalPrice,
-        shippingInfo: shippingInfo,
-        paymentMethod: paymentMethod,
-        userId: userId,
-        orderNotes: orderNotes,
-      );
-
-      return orderId;
-    } catch (e) {
-      throw 'Failed to save order: $e';
-    }
+  /// Creates a new order
+  Future<String> createOrder(OrderModel order) async {
+    return await _firestoreService.createOrder(order);
   }
 
-  /// Gets all orders for a specific user
-  Future<List<Map<String, dynamic>>> getUserOrders(String userId) async {
-    try {
-      return await _firestoreService.getUserOrders(userId);
-    } catch (e) {
-      throw 'Failed to get user orders: $e';
-    }
+  /// Creates an order from cart items
+  Future<String> createOrderFromCart({
+    required List<CartItemModel> cartItems,
+    required String receiverName,
+    required String receiverPhone,
+    String? receiverEmail,
+    required String shippingAddress,
+    String? shippingCity,
+    String? shippingDistrict,
+    String? shippingWard,
+    String? shippingNote,
+    required String paymentMethod,
+    String? deliveryMethod,
+    String? notes,
+  }) async {
+    return await _firestoreService.createOrderFromCart(
+      cartItems: cartItems,
+      receiverName: receiverName,
+      receiverPhone: receiverPhone,
+      receiverEmail: receiverEmail,
+      shippingAddress: shippingAddress,
+      shippingCity: shippingCity,
+      shippingDistrict: shippingDistrict,
+      shippingWard: shippingWard,
+      shippingNote: shippingNote,
+      paymentMethod: paymentMethod,
+      deliveryMethod: deliveryMethod,
+      notes: notes,
+    );
+  }
+
+  /// Gets all orders for the current user
+  Future<List<OrderModel>> getUserOrders() async {
+    return await _firestoreService.getUserOrders();
   }
 
   /// Gets a specific order by ID
-  Future<Map<String, dynamic>?> getOrder(String orderId) async {
-    try {
-      return await _firestoreService.getOrder(orderId);
-    } catch (e) {
-      throw 'Failed to get order: $e';
-    }
+  Future<OrderModel?> getOrder(String orderId) async {
+    return await _firestoreService.getOrder(orderId);
   }
 
-  /// Updates the status of an order
-  Future<void> updateOrderStatus(String orderId, String status) async {
-    try {
-      await _firestoreService.updateOrderStatus(orderId, status);
-    } catch (e) {
-      throw 'Failed to update order status: $e';
-    }
+  /// Updates order status
+  Future<void> updateOrderStatus(String orderId, String newStatus) async {
+    return await _firestoreService.updateOrderStatus(orderId, newStatus);
   }
 
-  /// Updates the payment status of an order
-  Future<void> updatePaymentStatus(String orderId, String paymentStatus) async {
-    try {
-      await _firestoreService.updatePaymentStatus(orderId, paymentStatus);
-    } catch (e) {
-      throw 'Failed to update payment status: $e';
-    }
+  /// Updates payment status
+  Future<void> updatePaymentStatus(
+    String orderId,
+    String newPaymentStatus,
+  ) async {
+    return await _firestoreService.updatePaymentStatus(
+      orderId,
+      newPaymentStatus,
+    );
   }
 
-  /// Calculates total price from cart items
-  double calculateTotalPrice(List<CartItemModel> cartItems) {
-    return cartItems.fold(0.0, (total, item) => total + item.totalPrice);
+  /// Cancels an order
+  Future<void> cancelOrder(String orderId) async {
+    return await _firestoreService.cancelOrder(orderId);
   }
 
-  /// Validates cart items before saving order
-  bool validateCartItems(List<CartItemModel> cartItems) {
-    if (cartItems.isEmpty) return false;
-
-    for (final item in cartItems) {
-      if (item.quantity <= 0) return false;
-      if (item.product.priceSale == null || item.product.priceSale! <= 0)
-        return false;
-    }
-
-    return true;
+  /// Gets orders by status
+  Future<List<OrderModel>> getOrdersByStatus(String status) async {
+    return await _firestoreService.getOrdersByStatus(status);
   }
 
-  /// Creates shipping info map from individual fields
-  Map<String, String> createShippingInfo({
-    required String receiverName,
-    required String receiverPhone,
-    required String shippingAddress,
-  }) {
-    return {
-      'receiverName': receiverName,
-      'receiverPhone': receiverPhone,
-      'shippingAddress': shippingAddress,
-    };
+  /// Gets orders within a date range
+  Future<List<OrderModel>> getOrdersByDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    return await _firestoreService.getOrdersByDateRange(startDate, endDate);
+  }
+
+  /// Gets order statistics for the current user
+  Future<Map<String, dynamic>> getOrderStatistics() async {
+    return await _firestoreService.getOrderStatistics();
+  }
+
+  /// Gets pending orders
+  Future<List<OrderModel>> getPendingOrders() async {
+    return await getOrdersByStatus('pending');
+  }
+
+  /// Gets confirmed orders
+  Future<List<OrderModel>> getConfirmedOrders() async {
+    return await getOrdersByStatus('confirmed');
+  }
+
+  /// Gets processing orders
+  Future<List<OrderModel>> getProcessingOrders() async {
+    return await getOrdersByStatus('processing');
+  }
+
+  /// Gets shipped orders
+  Future<List<OrderModel>> getShippedOrders() async {
+    return await getOrdersByStatus('shipped');
+  }
+
+  /// Gets delivered orders
+  Future<List<OrderModel>> getDeliveredOrders() async {
+    return await getOrdersByStatus('delivered');
+  }
+
+  /// Gets cancelled orders
+  Future<List<OrderModel>> getCancelledOrders() async {
+    return await getOrdersByStatus('cancelled');
+  }
+
+  /// Gets recent orders (last 30 days)
+  Future<List<OrderModel>> getRecentOrders() async {
+    final now = DateTime.now();
+    final thirtyDaysAgo = now.subtract(Duration(days: 30));
+    return await getOrdersByDateRange(thirtyDaysAgo, now);
+  }
+
+  /// Confirms an order (changes status from pending to confirmed)
+  Future<void> confirmOrder(String orderId) async {
+    return await updateOrderStatus(orderId, 'confirmed');
+  }
+
+  /// Marks an order as processing
+  Future<void> processOrder(String orderId) async {
+    return await updateOrderStatus(orderId, 'processing');
+  }
+
+  /// Marks an order as shipped
+  Future<void> shipOrder(String orderId) async {
+    return await updateOrderStatus(orderId, 'shipped');
+  }
+
+  /// Marks an order as delivered
+  Future<void> deliverOrder(String orderId) async {
+    return await updateOrderStatus(orderId, 'delivered');
+  }
+
+  /// Marks payment as paid
+  Future<void> markPaymentAsPaid(String orderId) async {
+    return await updatePaymentStatus(orderId, 'paid');
+  }
+
+  /// Marks payment as failed
+  Future<void> markPaymentAsFailed(String orderId) async {
+    return await updatePaymentStatus(orderId, 'failed');
+  }
+
+  /// Marks payment as refunded
+  Future<void> markPaymentAsRefunded(String orderId) async {
+    return await updatePaymentStatus(orderId, 'refunded');
   }
 }
 
@@ -144,4 +170,30 @@ class OrderService {
 final orderServiceProvider = Provider<OrderService>((ref) {
   final firestoreService = ref.watch(firestoreServiceProvider);
   return OrderService(firestoreService);
+});
+
+// Provider for user orders from Firestore
+final userOrdersProvider = FutureProvider<List<OrderModel>>((ref) async {
+  final orderService = ref.watch(orderServiceProvider);
+  return await orderService.getUserOrders();
+});
+
+// Provider for order statistics
+final orderStatisticsProvider = FutureProvider<Map<String, dynamic>>((
+  ref,
+) async {
+  final orderService = ref.watch(orderServiceProvider);
+  return await orderService.getOrderStatistics();
+});
+
+// Provider for pending orders
+final pendingOrdersProvider = FutureProvider<List<OrderModel>>((ref) async {
+  final orderService = ref.watch(orderServiceProvider);
+  return await orderService.getPendingOrders();
+});
+
+// Provider for recent orders
+final recentOrdersProvider = FutureProvider<List<OrderModel>>((ref) async {
+  final orderService = ref.watch(orderServiceProvider);
+  return await orderService.getRecentOrders();
 });

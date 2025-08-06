@@ -22,9 +22,23 @@ import '../../data/model/brandmodel.dart';
 import 'dart:math';
 
 class MainDetail extends ConsumerStatefulWidget {
-  final int productId;
+  final int? productId;
+  final String? productCode;
 
-  const MainDetail({Key? key, required this.productId}) : super(key: key);
+  const MainDetail({Key? key, this.productId, this.productCode})
+    : super(key: key);
+
+  // Constructor for backward compatibility
+  const MainDetail.fromId({Key? key, required int productId})
+    : productId = productId,
+      productCode = null,
+      super(key: key);
+
+  // Constructor for product code
+  const MainDetail.fromCode({Key? key, required String productCode})
+    : productId = null,
+      productCode = productCode,
+      super(key: key);
 
   @override
   ConsumerState<MainDetail> createState() => _MainDetailState();
@@ -40,6 +54,8 @@ class _MainDetailState extends ConsumerState<MainDetail> {
   List<ProductModel> allProducts = [];
   bool isLoading = true;
   String? selectedSize;
+  int?
+  productIdForDetails; // Add this field to store the product ID for details
 
   // State variable for quantity
   int _quantity = 1;
@@ -187,25 +203,61 @@ class _MainDetailState extends ConsumerState<MainDetail> {
       final clothing = await ClothingData().loadData();
       final bagAccessory = await BagAccessoryData().loadData();
 
+      // Find product by ID or code
+      ProductModel? foundProduct;
+
+      if (widget.productId != null) {
+        // Find by ID
+        foundProduct = products.firstWhere(
+          (p) => p.id == widget.productId,
+          orElse: () => ProductModel(),
+        );
+        productIdForDetails = widget.productId;
+      } else if (widget.productCode != null) {
+        // Find by code
+        foundProduct = products.firstWhere(
+          (p) => p.code == widget.productCode,
+          orElse: () => ProductModel(),
+        );
+        productIdForDetails = foundProduct.id;
+      }
+
+      if (foundProduct?.id == null || productIdForDetails == null) {
+        throw Exception('Product not found');
+      }
+
       setState(() {
         allProducts = products;
-        product = products.firstWhere((p) => p.id == widget.productId);
+        product = foundProduct;
         productSizes =
-            sizes.where((s) => s.productId == widget.productId).toList();
+            sizes.where((s) => s.productId == productIdForDetails).toList();
         racketInfos =
-            rackets.where((r) => r.productId == widget.productId).toList();
+            rackets.where((r) => r.productId == productIdForDetails).toList();
         shoeInfos =
-            shoes.where((s) => s.productId == widget.productId).toList();
+            shoes.where((s) => s.productId == productIdForDetails).toList();
         clothingInfos =
-            clothing.where((c) => c.productId == widget.productId).toList();
+            clothing.where((c) => c.productId == productIdForDetails).toList();
         bagAccessoryInfos =
-            bagAccessory.where((b) => b.productId == widget.productId).toList();
+            bagAccessory
+                .where((b) => b.productId == productIdForDetails)
+                .toList();
+
+        // Set default size to first available size
+        if (productSizes.isNotEmpty) {
+          final availableSizes =
+              productSizes.where((s) => s.status == 1).toList();
+          if (availableSizes.isNotEmpty) {
+            selectedSize = availableSizes.first.size;
+          }
+        }
+
         isLoading = false;
       });
     } catch (e) {
       setState(() {
         isLoading = false;
       });
+      print('Error loading product data: $e');
     }
   }
 
@@ -321,16 +373,26 @@ class _MainDetailState extends ConsumerState<MainDetail> {
         child: Column(
           children: [
             HeaderProduct(product: product!),
-            if (productSizes.isNotEmpty)
-              SizeSelector(
-                sizes: productSizes,
-                selectedSize: selectedSize,
-                onSizeSelected: (size) {
-                  setState(() {
-                    selectedSize = size;
-                  });
-                },
-              ),
+            QuantitySelector(
+              quantity: _quantity,
+              onIncrement: _incrementQuantity,
+              onDecrement: _decrementQuantity,
+              onQuantityChanged: (newQuantity) {
+                setState(() {
+                  _quantity = newQuantity;
+                });
+              },
+            ),
+            SizedBox(height: 16), // Add spacing between quantity and size
+            SizeSelector(
+              sizes: productSizes,
+              selectedSize: selectedSize,
+              onSizeSelected: (size) {
+                setState(() {
+                  selectedSize = size;
+                });
+              },
+            ),
             ProductInfo(
               product: product!,
               productType: getProductType(),
@@ -342,7 +404,7 @@ class _MainDetailState extends ConsumerState<MainDetail> {
                   bagAccessoryInfos.isNotEmpty ? bagAccessoryInfos.first : null,
             ),
             RecommendedProducts(
-              currentProductId: widget.productId,
+              currentProductId: productIdForDetails ?? 0,
               allProducts: allProducts,
             ),
             SizedBox(height: 100), // Space for bottom bar
@@ -364,94 +426,327 @@ class _MainDetailState extends ConsumerState<MainDetail> {
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: IconButton(
-                icon: Icon(Icons.remove, size: 20),
-                onPressed: _decrementQuantity, // Call decrement function
-              ),
-            ),
-            GestureDetector(
-              // Wrap with GestureDetector to open input dialog
-              onTap: _showQuantityInputDialog,
-              child: Container(
-                width: 60,
-                height: 40,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  // Add decoration to make it look like an input field
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  _quantity.toString(), // Display current quantity
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: IconButton(
-                icon: Icon(Icons.add, size: 20),
-                onPressed: _incrementQuantity, // Call increment function
-              ),
-            ),
             SizedBox(width: 16),
             Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange[200],
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.orange[300]!, Colors.orange[400]!],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                onPressed: () {
-                  _addToCart();
-                },
-                child: Text(
-                  'Thêm vào giỏ hàng',
-                  style: TextStyle(
-                    color: Colors.brown,
-                    fontWeight: FontWeight.bold,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      _addToCart();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.shopping_cart_outlined,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                          SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              'Thêm vào giỏ hàng',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
             SizedBox(width: 8),
             Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.orange[500]!, Colors.orange[600]!],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.withOpacity(0.4),
+                      spreadRadius: 1,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                onPressed: () {
-                  _buyNow();
-                },
-                child: Text(
-                  'Mua ngay',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      _buyNow();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.flash_on, color: Colors.white, size: 18),
+                          SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              'Mua ngay',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// quantity.dart
+class QuantitySelector extends StatelessWidget {
+  final int quantity;
+  final VoidCallback onIncrement;
+  final VoidCallback onDecrement;
+  final Function(int) onQuantityChanged;
+
+  const QuantitySelector({
+    Key? key,
+    required this.quantity,
+    required this.onIncrement,
+    required this.onDecrement,
+    required this.onQuantityChanged,
+  }) : super(key: key);
+
+  Future<void> _showQuantityInputDialog(BuildContext context) async {
+    final TextEditingController tempQuantityController = TextEditingController(
+      text: quantity.toString(),
+    );
+
+    final newQuantity = await showModalBottomSheet<int>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  'Nhập số lượng',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: tempQuantityController,
+                  keyboardType: TextInputType.number,
+                  autofocus: true,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    labelText: 'Số lượng',
+                  ),
+                  onSubmitted: (value) {
+                    final parsed = int.tryParse(value);
+                    if (parsed != null && parsed > 0) {
+                      Navigator.pop(context, parsed);
+                    } else {
+                      Navigator.pop(context, quantity);
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text('Hủy'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        final parsed = int.tryParse(
+                          tempQuantityController.text,
+                        );
+                        if (parsed != null && parsed > 0) {
+                          Navigator.pop(context, parsed);
+                        } else {
+                          Navigator.pop(context, quantity);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text('Xác nhận'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (newQuantity != null) {
+      onQuantityChanged(newQuantity);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Số lượng:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.brown[800],
+            ),
+          ),
+          SizedBox(height: 12),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.remove, size: 20, color: Colors.grey[700]),
+                    onPressed: onDecrement,
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => _showQuantityInputDialog(context),
+                  child: Container(
+                    width: 100,
+                    height: 44,
+                    margin: EdgeInsets.symmetric(horizontal: 12),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.orange[300]!),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.orange.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                          offset: Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      quantity.toString(),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange[700],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.add, size: 20, color: Colors.grey[700]),
+                    onPressed: onIncrement,
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -678,8 +973,6 @@ class SizeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (sizes.isEmpty) return SizedBox.shrink();
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16),
       padding: EdgeInsets.all(16),
@@ -707,49 +1000,103 @@ class SizeSelector extends StatelessWidget {
             ),
           ),
           SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children:
-                sizes.map((size) {
-                  bool isAvailable = size.status == 1;
-                  bool isSelected = selectedSize == size.size;
+          sizes.isEmpty
+              ? Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.grey[600],
+                        size: 20,
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Sản phẩm này không có size. Bạn có thể thêm vào giỏ hàng ngay.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+              : Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children:
+                      sizes.map((size) {
+                        bool isAvailable = size.status == 1;
+                        bool isSelected = selectedSize == size.size;
 
-                  return GestureDetector(
-                    onTap:
-                        isAvailable ? () => onSizeSelected(size.size!) : null,
-                    child: Container(
-                      width: 50,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color:
-                            isAvailable
-                                ? (isSelected ? Colors.orange : Colors.white)
-                                : Colors.grey[300],
-                        border: Border.all(
-                          color:
+                        return GestureDetector(
+                          onTap:
                               isAvailable
-                                  ? (isSelected ? Colors.orange : Colors.grey)
-                                  : Colors.grey[400]!,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        size.size ?? '',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              isAvailable
-                                  ? (isSelected ? Colors.white : Colors.black)
-                                  : Colors.grey[600],
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-          ),
+                                  ? () => onSizeSelected(size.size!)
+                                  : null,
+                          child: Container(
+                            width: 55,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color:
+                                  isAvailable
+                                      ? (isSelected
+                                          ? Colors.orange
+                                          : Colors.white)
+                                      : Colors.grey[300],
+                              border: Border.all(
+                                color:
+                                    isAvailable
+                                        ? (isSelected
+                                            ? Colors.orange
+                                            : Colors.grey)
+                                        : Colors.grey[400]!,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow:
+                                  isAvailable && isSelected
+                                      ? [
+                                        BoxShadow(
+                                          color: Colors.orange.withOpacity(0.3),
+                                          spreadRadius: 1,
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ]
+                                      : null,
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              size.size ?? '',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    isAvailable
+                                        ? (isSelected
+                                            ? Colors.white
+                                            : Colors.black)
+                                        : Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                ),
+              ),
         ],
       ),
     );

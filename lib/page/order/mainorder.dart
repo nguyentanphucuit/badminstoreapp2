@@ -4,13 +4,12 @@ import '../../data/model/ordermodel.dart';
 import '../../data/model/orderdetailmodel.dart';
 import '../../data/model/productmodel.dart';
 import '../../data/model/usermodel.dart';
-import '../../data/data/orderdata.dart';
-import '../../data/data/orderdetaildata.dart';
-import '../../data/data/productdata.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/firestore_service.dart';
 import '../order/orderbody.dart';
 
 class MainOrder extends ConsumerStatefulWidget {
-  final UserModel? user;
+  final dynamic user; // Accept either UserModel or Firebase User
 
   const MainOrder({Key? key, this.user}) : super(key: key);
 
@@ -23,20 +22,18 @@ class _MainOrderState extends ConsumerState<MainOrder>
   late TabController _tabController;
   List<OrderModel> allOrders = [];
   List<OrderModel> userOrders = [];
-  List<OrderDetailModel> orderDetails = [];
   List<ProductModel> products = [];
   bool isLoading = true;
   String selectedFilter = 'all';
   String? errorMessage;
 
   // Data service instances
-  final OrderData orderData = OrderData();
-  final OrderDetailData orderDetailData = OrderDetailData();
-  // final ProductData productData = ProductData(); // Add this when available
+  final FirestoreService _firestoreService = FirestoreService();
 
   @override
   void initState() {
     super.initState();
+    print('MainOrder initState called');
     _tabController = TabController(length: 5, vsync: this);
     loadData();
   }
@@ -47,7 +44,7 @@ class _MainOrderState extends ConsumerState<MainOrder>
     super.dispose();
   }
 
-  // Load dữ liệu từ JSON files
+  // Load data from Firebase Firestore
   Future<void> loadData() async {
     setState(() {
       isLoading = true;
@@ -55,37 +52,32 @@ class _MainOrderState extends ConsumerState<MainOrder>
     });
 
     try {
-      // Load all data concurrently
-      final results = await Future.wait([
-        orderData.loadData(),
-        orderDetailData.loadData(),
-        // productData.loadData(), // Uncomment when ProductData is available
-        Future.value(<ProductModel>[]), // Placeholder for products
-      ]);
+      print('Starting to load orders...');
 
-      allOrders = results[0] as List<OrderModel>;
-      orderDetails = results[1] as List<OrderDetailModel>;
-      products = results[2] as List<ProductModel>;
+      // Load orders from Firebase
+      allOrders = await _firestoreService.getUserOrders();
+      debugPrint('Loaded ${allOrders.length} orders from Firebase');
 
-      // Lọc đơn hàng theo userId nếu có user đăng nhập, nếu không thì hiển thị tất cả
+      // Filter orders by user (Firebase already filters by current user)
       _filterOrdersByUser();
 
-      // Create products from order details if ProductData is not available
-      if (products.isEmpty) {
-        products = _createProductsFromOrderDetails();
-      }
+      // Load products for order details
+      await _loadProductsForOrders();
 
       // Sort orders by date (newest first)
       userOrders.sort((a, b) {
-        DateTime dateA = DateTime.parse(a.orderDate ?? '');
-        DateTime dateB = DateTime.parse(b.orderDate ?? '');
+        DateTime dateA = a.orderDate ?? DateTime.now();
+        DateTime dateB = b.orderDate ?? DateTime.now();
         return dateB.compareTo(dateA);
       });
+
+      print('Successfully loaded and processed orders');
     } catch (e) {
       setState(() {
         errorMessage = 'Lỗi khi tải dữ liệu: ${e.toString()}';
       });
       debugPrint('Error loading data: $e');
+      debugPrint('Error stack trace: ${StackTrace.current}');
     } finally {
       setState(() {
         isLoading = false;
@@ -93,40 +85,47 @@ class _MainOrderState extends ConsumerState<MainOrder>
     }
   }
 
-  // Lọc đơn hàng theo userId của user đã đăng nhập, nếu không có user thì hiển thị tất cả
-  void _filterOrdersByUser() {
-    if (widget.user?.id != null) {
-      userOrders =
-          allOrders.where((order) => order.userId == widget.user!.id).toList();
-    } else {
-      // Nếu không có user (chưa đăng nhập), hiển thị tất cả đơn hàng
-      userOrders = allOrders;
+  // Load products for order details
+  Future<void> _loadProductsForOrders() async {
+    try {
+      // Since orders already contain product information in items,
+      // we can create ProductModel objects from the order items
+      Set<String> processedProductIds = {};
+      List<ProductModel> orderProducts = [];
+
+      for (var order in allOrders) {
+        if (order.items != null) {
+          for (var item in order.items!) {
+            if (item.productId != null &&
+                !processedProductIds.contains(item.productId)) {
+              processedProductIds.add(item.productId!);
+
+              // Create ProductModel from order item
+              orderProducts.add(
+                ProductModel(
+                  id: int.tryParse(item.productId!),
+                  productName: item.productName,
+                  priceSale: item.unitPrice?.toInt(),
+                  image: item.productImage,
+                ),
+              );
+            }
+          }
+        }
+      }
+
+      products = orderProducts;
+    } catch (e) {
+      debugPrint('Error loading products: $e');
+      // Continue without products if there's an error
     }
   }
 
-  // Create product models from order details (temporary solution)
-  List<ProductModel> _createProductsFromOrderDetails() {
-    Map<int, ProductModel> productMap = {};
-
-    for (var detail in orderDetails) {
-      if (detail.productId != null &&
-          !productMap.containsKey(detail.productId)) {
-        // Extract product name from order detail
-        String? productName;
-        if (detail is OrderDetailModelWithName) {
-          productName = (detail as OrderDetailModelWithName).productName;
-        }
-
-        productMap[detail.productId!] = ProductModel(
-          id: detail.productId,
-          productName: productName ?? 'Sản phẩm ${detail.productId}',
-          priceSale: detail.price,
-          image: 'default_product.jpg', // Default image
-        );
-      }
-    }
-
-    return productMap.values.toList();
+  // Filter orders by user (Firebase already filters by current user)
+  void _filterOrdersByUser() {
+    // Since getUserOrders() already filters by the current Firebase user,
+    // we just assign all orders to userOrders
+    userOrders = allOrders;
   }
 
   // Lọc đơn hàng theo trạng thái (chỉ trong đơn hàng của user)
@@ -135,21 +134,52 @@ class _MainOrderState extends ConsumerState<MainOrder>
       return userOrders;
     }
 
-    int statusFilter = int.parse(selectedFilter);
+    // Convert string filter to order status
+    String statusFilter = _convertFilterToStatus(selectedFilter);
     return userOrders
         .where((order) => order.orderStatus == statusFilter)
         .toList();
   }
 
-  // Lấy chi tiết đơn hàng theo orderId (chỉ cho đơn hàng của user)
-  List<OrderDetailModel> getOrderDetailsByOrderId(int orderId) {
-    return orderDetails.where((detail) => detail.orderId == orderId).toList();
+  // Convert filter string to order status
+  String _convertFilterToStatus(String filter) {
+    switch (filter) {
+      case '0':
+        return 'cancelled';
+      case '1':
+        return 'pending';
+      case '2':
+        return 'shipped';
+      case '3':
+        return 'delivered';
+      default:
+        return 'pending';
+    }
+  }
+
+  // Get user display name for different user types
+  String? _getUserDisplayName() {
+    if (widget.user is UserModel) {
+      return widget.user.fullname;
+    } else if (widget.user is User) {
+      return widget.user.displayName ?? widget.user.email;
+    }
+    return null;
+  }
+
+  // Get order details from order items (Firebase structure)
+  List<OrderItemModel> getOrderDetailsByOrderId(String orderId) {
+    final order = allOrders.firstWhere(
+      (order) => order.id == orderId,
+      orElse: () => OrderModel(),
+    );
+    return order.items ?? [];
   }
 
   // Đếm số lượng đơn hàng theo trạng thái (chỉ trong đơn hàng của user)
   int getOrderCountByStatus(String status) {
     if (status == 'all') return userOrders.length;
-    int statusValue = int.parse(status);
+    String statusValue = _convertFilterToStatus(status);
     return userOrders.where((order) => order.orderStatus == statusValue).length;
   }
 
@@ -170,9 +200,9 @@ class _MainOrderState extends ConsumerState<MainOrder>
                 color: Colors.brown,
               ),
             ),
-            if (widget.user?.fullname != null)
+            if (_getUserDisplayName() != null)
               Text(
-                'Của ${widget.user!.fullname!}',
+                'Của ${_getUserDisplayName()}',
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.brown,
@@ -259,12 +289,12 @@ class _MainOrderState extends ConsumerState<MainOrder>
                           itemCount: filteredOrders.length,
                           itemBuilder: (context, index) {
                             OrderModel order = filteredOrders[index];
-                            List<OrderDetailModel> orderDetailList =
+                            List<OrderItemModel> orderItemList =
                                 getOrderDetailsByOrderId(order.id!);
 
                             return itemOrderView(
                               order,
-                              orderDetailList,
+                              orderItemList,
                               products,
                               ref,
                             );
@@ -363,7 +393,7 @@ class _MainOrderState extends ConsumerState<MainOrder>
             style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
           const SizedBox(height: 24),
-          if (selectedFilter == 'all')
+          if (selectedFilter == 'all') ...[
             ElevatedButton.icon(
               onPressed: () {
                 // Navigate to shopping page (home tab)
@@ -383,8 +413,58 @@ class _MainOrderState extends ConsumerState<MainOrder>
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                // Test button to debug Firebase connection
+                _testFirebaseConnection();
+              },
+              icon: const Icon(Icons.bug_report),
+              label: const Text('Test Firebase'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange[600],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  // Test Firebase connection
+  Future<void> _testFirebaseConnection() async {
+    try {
+      print('Testing Firebase connection...');
+
+      // Test getting user orders
+      final orders = await _firestoreService.getUserOrders();
+      print('Test: Found ${orders.length} orders');
+
+      // Show result in snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Firebase test: Found ${orders.length} orders'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      print('Firebase test error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Firebase test error: $e'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    }
   }
 }

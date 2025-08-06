@@ -58,7 +58,7 @@ class _MainPageState extends ConsumerState<MainPage> {
         List<Widget> pages = [
           const HomeWidget(user: null), // Trang chủ - using proper HomeWidget
           const ProductFavorite(), // Trang yêu thích
-          const MainOrder(), // Trang đơn hàng - will be updated to use Firebase Auth
+          MainOrder(user: user), // Trang đơn hàng - pass user from auth
           const ProfilePage(), // Trang cá nhân
         ];
 

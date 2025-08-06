@@ -37,7 +37,7 @@ class _ProductFavoriteState extends ConsumerState<ProductFavorite> {
   Future<void> _loadFavoritesFromFirestore() async {
     setState(() {
       _isLoading = true;
-      _debugInfo = 'Loading favorites...';
+      // _debugInfo = 'Loading favorites...'; // Hidden for production
     });
 
     try {
@@ -47,41 +47,30 @@ class _ProductFavoriteState extends ConsumerState<ProductFavorite> {
 
       if (currentUser == null) {
         setState(() {
-          _debugInfo = 'User not authenticated. Please log in first.';
+          // _debugInfo = 'User not authenticated. Please log in first.'; // Hidden for production
           _isLoading = false;
         });
         return;
       }
 
-      setState(() {
-        _debugInfo =
-            'User authenticated: ${currentUser.uid}\nLoading favorites...';
-      });
+      // setState(() {
+      //   _debugInfo =
+      //       'User authenticated: ${currentUser.uid}\nLoading favorites...'; // Hidden for production
+      // });
 
       // Load favorites using the provider
       await ref.read(productsProvider.notifier).loadFavoritesFromFirestore();
 
       print('Favorites loaded from Firestore successfully');
       setState(() {
-        _debugInfo = 'Favorites loaded successfully!\nCheck the list below.';
+        // _debugInfo = 'Favorites loaded successfully!\nCheck the list below.'; // Hidden for production
         _favoritesLoaded = true; // Mark favorites as loaded
       });
-
-      // Show success message
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đã tải danh sách yêu thích thành công'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
     } catch (e) {
       print('Failed to load favorites from Firestore: $e');
       setState(() {
-        _debugInfo =
-            'Error loading favorites: $e\nTap debug button for more info.';
+        // _debugInfo =
+        //     'Error loading favorites: $e\nTap debug button for more info.'; // Hidden for production
       });
       // Show error message
       if (mounted) {
@@ -103,9 +92,9 @@ class _ProductFavoriteState extends ConsumerState<ProductFavorite> {
 
   /// Debug function to manually test favorites retrieval
   Future<void> _debugFavorites() async {
-    setState(() {
-      _debugInfo = 'Debugging...';
-    });
+    // setState(() {
+    //   _debugInfo = 'Debugging...'; // Hidden for production
+    // });
 
     try {
       final auth = FirebaseAuth.instance;
@@ -236,15 +225,15 @@ class _ProductFavoriteState extends ConsumerState<ProductFavorite> {
         debugText += 'Please log in first\n';
       }
 
-      setState(() {
-        _debugInfo = debugText;
-      });
+      // setState(() {
+      //   _debugInfo = debugText; // Hidden for production
+      // });
 
       print('Debug info: $debugText');
     } catch (e) {
-      setState(() {
-        _debugInfo = 'Debug error: $e';
-      });
+      // setState(() {
+      //   _debugInfo = 'Debug error: $e'; // Hidden for production
+      // });
       print('Debug error: $e');
     }
   }
@@ -285,44 +274,45 @@ class _ProductFavoriteState extends ConsumerState<ProductFavorite> {
                 onPressed: _loadFavoritesFromFirestore,
                 tooltip: 'Làm mới danh sách yêu thích',
               ),
-              IconButton(
-                icon: Icon(Icons.bug_report, color: Colors.brown[800]),
-                onPressed: _debugFavorites,
-                tooltip: 'Debug favorites',
-              ),
+              // Debug button - Hidden for production
+              // IconButton(
+              //   icon: Icon(Icons.bug_report, color: Colors.brown[800]),
+              //   onPressed: _debugFavorites,
+              //   tooltip: 'Debug favorites',
+              // ),
             ],
           ),
           body: Column(
             children: [
-              // Debug info section
-              if (_debugInfo.isNotEmpty)
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(8),
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Debug Info:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        _debugInfo,
-                        style: TextStyle(fontSize: 10, fontFamily: 'monospace'),
-                      ),
-                    ],
-                  ),
-                ),
+              // Debug info section - Hidden for production
+              // if (_debugInfo.isNotEmpty)
+              //   Container(
+              //     width: double.infinity,
+              //     padding: EdgeInsets.all(8),
+              //     margin: EdgeInsets.all(8),
+              //     decoration: BoxDecoration(
+              //       color: Colors.grey[100],
+              //       borderRadius: BorderRadius.circular(8),
+              //       border: Border.all(color: Colors.grey[300]!),
+              //     ),
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Text(
+              //           'Debug Info:',
+              //           style: TextStyle(
+              //             fontWeight: FontWeight.bold,
+              //             fontSize: 12,
+              //           ),
+              //         ),
+              //         SizedBox(height: 4),
+              //         Text(
+              //           _debugInfo,
+              //           style: TextStyle(fontSize: 10, fontFamily: 'monospace'),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
               // Main content
               Expanded(
                 child:
